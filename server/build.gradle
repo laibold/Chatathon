@@ -1,0 +1,22 @@
+plugins {
+    id 'java'
+}
+
+apply plugin: 'application'
+mainClassName = 'de.hs_rm.chat_server.Main'
+
+group 'de.hs_rm.chat_server'
+version '1.0'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+}
+
+test {
+    useJUnitPlatform()
+}
