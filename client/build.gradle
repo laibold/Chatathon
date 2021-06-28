@@ -1,12 +1,18 @@
 plugins {
     id 'java'
+    id 'application'
+    id 'org.openjfx.javafxplugin' version '0.0.9'
 }
 
-apply plugin: 'application'
 mainClassName = 'de.hs_rm.chat_client.Main'
 
 group 'de.hs_rm.chat_client'
 version '1.0'
+
+javafx {
+    version = "15.0.1"
+    modules = [ 'javafx.controls' ]
+}
 
 repositories {
     mavenCentral()
