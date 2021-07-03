@@ -1,8 +1,5 @@
 package de.hs_rm.chat_server;
 
-import java.io.File;
-import java.io.IOException;
-
 public class Server {
 
     public static void main(String[] args) {
@@ -10,7 +7,13 @@ public class Server {
 
         int port = 8080;
 
-        //Listener listener = new Listener(port);
-        //listener.listen();
+        // Listener listener = new Listener(port);
+        // listener.listen();
+
+        try {
+            Thread.currentThread().join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }
