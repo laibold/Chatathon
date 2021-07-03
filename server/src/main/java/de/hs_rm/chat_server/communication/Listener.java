@@ -31,7 +31,10 @@ public class Listener {
                         reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                         final BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 
-                        // TODO: Handle requests
+                        // TODO: Parse requests
+
+                        // TODO: Forward request - differentiate by using Enum
+
 
                     } catch (IOException e) {
                         e.printStackTrace();
