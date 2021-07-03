@@ -1,5 +1,8 @@
 package de.hs_rm.chat_server.communication;
 
+import de.hs_rm.chat_server.model.header.InvalidHeaderException;
+import de.hs_rm.chat_server.service.HeaderMapper;
+
 import java.io.*;
 import java.net.ServerSocket;
 
@@ -30,11 +33,25 @@ public class Listener {
                         reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                         final var writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 
-                        // TODO: Parse header to get body length
+                        // Parse header to get body length
+                        var headerString = reader.readLine();
+
+                        // TODO: Abfangen: if (line == null || line.equals(""))
+                        var header = HeaderMapper.toHeader(headerString);
+                        var chars = new char[header.getContentLength()];
+
+                        String body;
+                        var charsRead = reader.read(chars, 0, header.getContentLength());
+                        if (charsRead != -1) {
+                            body = new String(chars, 0, charsRead);
+                        } else {
+                            body = "";
+                        }
 
                         // TODO: Forward message type and body to MessageHandler
 
-                    } catch (IOException e) {
+
+                    } catch (IOException | InvalidHeaderException e) {
                         e.printStackTrace();
                     }
                 });
