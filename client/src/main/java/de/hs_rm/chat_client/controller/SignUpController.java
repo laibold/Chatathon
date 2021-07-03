@@ -32,7 +32,7 @@ public class SignUpController extends BaseController {
     @FXML
     private void signUp(ActionEvent event) {
         if (usernameText.getText().isBlank() || passwordText.getText().isBlank()) {
-            new Alert(Alert.AlertType.NONE, "Eingaben überprüfen!", ButtonType.CLOSE).showAndWait();
+            new Alert(Alert.AlertType.NONE, "Invalid input", ButtonType.CLOSE).showAndWait();
         } else {
             var username = usernameText.getText().trim();
             var password = PasswordHasher.getHashedPassword(passwordText.getText().trim());
@@ -40,9 +40,9 @@ public class SignUpController extends BaseController {
             try {
                 sendMessageService.sendSignUpMessage(new User(username, password));
             } catch (InvalidHeaderException e) {
-                new Alert(Alert.AlertType.ERROR, "Interner Fehler", ButtonType.CLOSE).showAndWait();
+                new Alert(Alert.AlertType.ERROR, "Internal failure", ButtonType.CLOSE).showAndWait();
             } catch (IOException e) {
-                new Alert(Alert.AlertType.ERROR, "Netzwerkfehler", ButtonType.CLOSE).showAndWait();
+                new Alert(Alert.AlertType.ERROR, "Network failure", ButtonType.CLOSE).showAndWait();
             }
         }
     }

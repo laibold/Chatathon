@@ -20,7 +20,7 @@
             </VBox.margin>
         </TextField>
 
-        <Label text="Passwort"/>
+        <Label text="Password"/>
 
         <PasswordField fx:id="passwordText">
             <VBox.margin>
@@ -30,7 +30,7 @@
             </VBox.margin>
         </PasswordField>
 
-        <Button text="Registrieren" onAction="#signUp">
+        <Button text="Sign up" onAction="#signUp">
             <VBox.margin>
                 <Insets>
                     <bottom>20</bottom>
@@ -40,6 +40,6 @@
 
     </VBox>
 
-    <Text text="Zum Login" onMouseClicked="#navigateToSignIn"/>
+    <Text text="To Login" onMouseClicked="#navigateToSignIn"/>
 
 </VBox>

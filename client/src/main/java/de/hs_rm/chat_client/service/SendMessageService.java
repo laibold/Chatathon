@@ -42,6 +42,12 @@ public class SendMessageService {
         writeMessage(message);
     }
 
+    public void sendSignInMessage(User user) throws InvalidHeaderException, IOException {
+        var message = MessageGenerator.generateMessage(MessageType.SIGN_IN, user);
+
+        writeMessage(message);
+    }
+
     private void writeMessage(String messageString) throws IOException {
         writer.write(messageString);
         writer.flush();
