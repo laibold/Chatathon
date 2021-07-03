@@ -1,9 +1,9 @@
 package de.hs_rm.chat_client.controller;
 
+import de.hs_rm.chat_client.communication.MessageService;
 import de.hs_rm.chat_client.model.header.InvalidHeaderException;
 import de.hs_rm.chat_client.model.user.User;
 import de.hs_rm.chat_client.service.PasswordHasher;
-import de.hs_rm.chat_client.communication.MessageService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -14,7 +14,7 @@ import javafx.scene.input.MouseEvent;
 
 import java.io.IOException;
 
-public class SignInController extends BaseController {
+public class SignInController extends BaseController implements StateObserver {
 
     @FXML
     private TextField usernameText;
@@ -27,6 +27,7 @@ public class SignInController extends BaseController {
     @FXML
     public void initialize() {
         messageService = MessageService.getInstance();
+        ClientState.getInstance().addObserver(this, ClientState.State.SIGNED_UP);
     }
 
     @FXML
@@ -57,4 +58,8 @@ public class SignInController extends BaseController {
         return "signin.fxml";
     }
 
+    @Override
+    public void navigateToNext() {
+        System.out.println("Start chatting!"); // TODO
+    }
 }

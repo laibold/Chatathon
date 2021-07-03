@@ -14,7 +14,7 @@ import javafx.scene.input.MouseEvent;
 
 import java.io.IOException;
 
-public class SignUpController extends BaseController {
+public class SignUpController extends BaseController implements StateObserver {
 
     @FXML
     private TextField usernameText;
@@ -27,6 +27,7 @@ public class SignUpController extends BaseController {
     @FXML
     public void initialize() {
         messageService = MessageService.getInstance();
+        ClientState.getInstance().addObserver(this, ClientState.State.SIGNED_UP);
     }
 
     @FXML
@@ -55,5 +56,11 @@ public class SignUpController extends BaseController {
     @Override
     public String getViewPath() {
         return "signup.fxml";
+    }
+
+    @Override
+    public void navigateToNext() {
+        System.out.println("NAVIGATE!!!");
+        navigateTo(new SignInController());
     }
 }

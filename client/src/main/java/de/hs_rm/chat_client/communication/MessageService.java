@@ -1,8 +1,11 @@
 package de.hs_rm.chat_client.communication;
 
+import de.hs_rm.chat_client.controller.ClientState;
+import de.hs_rm.chat_client.model.header.Header;
 import de.hs_rm.chat_client.model.header.InvalidHeaderException;
 import de.hs_rm.chat_client.model.header.MessageType;
 import de.hs_rm.chat_client.model.user.User;
+import de.hs_rm.chat_client.service.HeaderMapper;
 
 import java.io.*;
 import java.net.Socket;
@@ -16,10 +19,12 @@ public class MessageService {
 
     private final Socket socket;
     private final BufferedWriter writer;
+    private final ClientState clientState;
 
     private MessageService() throws IOException {
         socket = new Socket(REMOTE_HOST, REMOTE_PORT);
         writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+        clientState = ClientState.getInstance();
         listen();
     }
 
@@ -56,9 +61,45 @@ public class MessageService {
         new Thread(() -> {
             while (true) {
                 try {
-                    var serverIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                    var response = serverIn.readLine();
-                    System.out.println(response);
+                    var inFromServer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                    var line = inFromServer.readLine();
+
+                    if (line != null) {
+                        Header header = null;
+
+                        try {
+                            header = HeaderMapper.toHeader(line);
+                        } catch (InvalidHeaderException e) {
+                            e.printStackTrace();
+                        }
+
+                        assert header != null;
+                        var chars = new char[header.getContentLength()];
+
+                        String body;
+                        var charsRead = inFromServer.read(chars, 0, header.getContentLength());
+                        if (charsRead != -1) {
+                            body = new String(chars, 0, charsRead);
+                        } else {
+                            body = null;
+                        }
+
+                        if (header.getStatus() == Header.Status.SUCCESS) {
+                            switch (header.getMessageType()) {
+                                case SIGN_UP_RESPONSE:
+                                    clientState.setCurrentState(ClientState.State.SIGNED_UP);
+                                    break;
+                                case SIGN_IN_RESPONSE:
+                                    clientState.setCurrentState(ClientState.State.LOGGED_IN);
+                                    break;
+                                default:
+                                    break;
+                            }
+                        } else {
+                            // TODO error handling
+                        }
+
+                    }
 
                 } catch (IOException e) {
                     e.printStackTrace();
