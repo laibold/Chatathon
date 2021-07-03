@@ -1,4 +1,4 @@
-package de.hs_rm.chat_client.service;
+package de.hs_rm.chat_client.communication;
 
 import de.hs_rm.chat_client.model.header.InvalidHeaderException;
 import de.hs_rm.chat_client.model.header.MessageType;
@@ -7,32 +7,32 @@ import de.hs_rm.chat_client.model.user.User;
 import java.io.*;
 import java.net.Socket;
 
-public class SendMessageService {
+public class MessageService {
 
     private static final String REMOTE_HOST = "localhost";
     private static final int REMOTE_PORT = 8080;
 
-    private static SendMessageService instance;
+    private static MessageService instance;
 
-    private Socket socket;
-    private BufferedWriter writer;
+    private final Socket socket;
+    private final BufferedWriter writer;
 
-    private SendMessageService() throws IOException {
+    private MessageService() throws IOException {
         socket = new Socket(REMOTE_HOST, REMOTE_PORT);
         writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
         listen();
     }
 
-    public static synchronized SendMessageService getInstance() {
-        if (SendMessageService.instance == null) {
+    public static synchronized MessageService getInstance() {
+        if (MessageService.instance == null) {
             try {
-                SendMessageService.instance = new SendMessageService();
+                MessageService.instance = new MessageService();
             } catch (IOException e) {
                 System.err.println("Could not create socket: " + e.getMessage());
             }
         }
 
-        return SendMessageService.instance;
+        return MessageService.instance;
     }
 
     public void sendSignUpMessage(User user) throws InvalidHeaderException, IOException {
