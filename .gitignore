@@ -7,3 +7,5 @@ server/.idea
 server/build
 gradle-wrapper.jar
 server/db
+.idea/
+client/gradle/wrapper/gradle-wrapper.properties
