@@ -32,7 +32,7 @@ public class SignInController extends BaseController {
 
     @FXML
     private void navigateToSignUp(MouseEvent event) {
-        navigateTo(new SignupController());
+        navigateTo(new SignUpController());
     }
 
     @Override

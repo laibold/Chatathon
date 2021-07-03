@@ -14,7 +14,7 @@ import javafx.scene.input.MouseEvent;
 
 import java.io.IOException;
 
-public class SignupController extends BaseController {
+public class SignUpController extends BaseController {
 
     @FXML
     private TextField usernameText;
