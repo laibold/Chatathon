@@ -13,9 +13,9 @@ public class MessageGenerator {
 
     private static final Gson gson = new Gson();
 
-    public static String generateMessage(MessageType messageType, Object body) throws InvalidHeaderException {
+    public static String generateMessage(Header.Status status, MessageType messageType, Object body) throws InvalidHeaderException {
         var bodyJsonString = gson.toJson(body);
-        var header = new Header(messageType, bodyJsonString.length());
+        var header = new Header(messageType, bodyJsonString.length(), status);
         var headerString = HeaderMapper.toJsonString(header);
 
         return headerString + "\n" + bodyJsonString;

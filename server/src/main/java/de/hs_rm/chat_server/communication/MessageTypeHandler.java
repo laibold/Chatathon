@@ -3,13 +3,15 @@ package de.hs_rm.chat_server.communication;
 import de.hs_rm.chat_server.communication.handler.MessageHandler;
 import de.hs_rm.chat_server.communication.handler.SignInMessageHandler;
 import de.hs_rm.chat_server.communication.handler.SignUpMessageHandler;
+import de.hs_rm.chat_server.model.header.Header;
 import de.hs_rm.chat_server.model.header.InvalidHeaderException;
 import de.hs_rm.chat_server.model.header.MessageType;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class MessageTypeHandler {
-    private final HashMap<MessageType, MessageHandler> handlers = new HashMap<>();
+    private final Map<MessageType, MessageHandler> handlers = new HashMap<>();
 
     public MessageTypeHandler() {
         handlers.put(MessageType.SIGN_UP, new SignUpMessageHandler());
@@ -20,7 +22,8 @@ public class MessageTypeHandler {
         var handler = handlers.get(messageType);
         var responseBody = handler.handle(body);
 
-        return MessageGenerator.generateMessage(handler.getResponseMessageType(), responseBody);
+        // TODO
+        return MessageGenerator.generateMessage(Header.Status.SUCCESS, handler.getResponseMessageType(), responseBody);
     }
 
 
