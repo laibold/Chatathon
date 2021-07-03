@@ -18,6 +18,16 @@ public class Header {
         this.status = status;
     }
 
+    @Override
+    public String toString() {
+        var statusStr = status == null ? "" : ", status=" + status;
+        return "{" +
+            "messageType=" + messageType +
+            ", contentLength=" + contentLength +
+            statusStr +
+            '}';
+    }
+
     public MessageType getMessageType() {
         return messageType;
     }
