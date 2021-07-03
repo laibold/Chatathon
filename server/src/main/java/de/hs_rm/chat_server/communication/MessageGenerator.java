@@ -8,9 +8,10 @@ import de.hs_rm.chat_server.service.HeaderMapper;
 
 public class MessageGenerator {
 
-    private MessageGenerator() {
-    }
-
+    /*
+     *  TODO: Gson wird mehrmals instanziiert: MessageGenerator, HeaderMapper und in den Handlers.
+     *  Wir können den bestimmt in eine einzige Klasse "JSONHelper" oder sowas auslagern.
+     */
     private static final Gson gson = new Gson();
 
     public static String generateMessage(Header.Status status, MessageType messageType, Object body) throws InvalidHeaderException {
