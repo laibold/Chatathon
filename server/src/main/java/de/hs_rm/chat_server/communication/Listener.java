@@ -23,10 +23,10 @@ public class Listener {
     public void listen() {
         while (true) {
             try {
-                final Socket connectionSocket = this.welcomeSocket.accept();
-                System.out.println("Client hat sich verbunden: " + connectionSocket.getInetAddress());
+                final var connectionSocket = this.welcomeSocket.accept();
+                System.out.println("Client hat sich verbunden: " + connectionSocket.getInetAddress() + "\n");
 
-                final Thread thread = new Thread(() ->  {
+                new Thread(() ->  {
                     BufferedReader inFromClient = null;
                     DataOutputStream outToClient = null;
 
@@ -38,8 +38,7 @@ public class Listener {
                     }
 
                     handleRequests(connectionSocket, inFromClient, outToClient);
-                });
-                thread.start();
+                }).start();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -47,15 +46,13 @@ public class Listener {
     }
 
     private void handleRequests(final Socket connectionSocket, final BufferedReader inFromClient, final DataOutputStream outToClient) {
-        boolean connected = true;
+        var connected = true;
 
         while (connected) {
             final String line;
             try {
                 line = inFromClient.readLine();
                 if (line != null) {
-                    System.out.printf("Vom Client (%s) empfangen: %s%n", connectionSocket.getRemoteSocketAddress(), line);
-
                     //
                     // PARSE HEADER AND BODY
                     //
@@ -79,14 +76,14 @@ public class Listener {
                         body = null;
                     }
 
-                    System.out.println(header);
-                    System.out.println(body);
+                    var clientStr = connectionSocket.getRemoteSocketAddress() + ":" + connectionSocket.getLocalPort();
+                    System.out.printf("Vom Client %s empfangen:\n%s \n%s \n\n", clientStr, header, body);
 
                     //
                     // RESPONSE
                     //
 
-                    System.out.printf("Sende an Client (%s): %s%n", connectionSocket.getRemoteSocketAddress(), header.getMessageType());
+                    System.out.printf("Sende an Client (%s): %s%n\n", connectionSocket.getRemoteSocketAddress(), header.getMessageType());
                     outToClient.writeBytes(header.getMessageType() + "\n");
                     // Brauchen wir "outToClient.flush();"?
                 } else {
