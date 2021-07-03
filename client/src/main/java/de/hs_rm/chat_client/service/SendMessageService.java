@@ -4,9 +4,7 @@ import de.hs_rm.chat_client.model.header.InvalidHeaderException;
 import de.hs_rm.chat_client.model.header.MessageType;
 import de.hs_rm.chat_client.model.user.User;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.net.Socket;
 
 public class SendMessageService {
@@ -22,6 +20,7 @@ public class SendMessageService {
     private SendMessageService() throws IOException {
         socket = new Socket(REMOTE_HOST, REMOTE_PORT);
         writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+        listen();
     }
 
     public static synchronized SendMessageService getInstance() {
@@ -51,5 +50,20 @@ public class SendMessageService {
     private void writeMessage(String messageString) throws IOException {
         writer.write(messageString);
         writer.flush();
+    }
+
+    private void listen() {
+        new Thread(() -> {
+            while (true) {
+                try {
+                    var serverIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                    var response = serverIn.readLine();
+                    System.out.println(response);
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 }

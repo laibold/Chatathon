@@ -7,6 +7,9 @@ import de.hs_rm.chat_server.model.header.InvalidHeaderException;
 
 public class HeaderMapper {
 
+    private HeaderMapper() {
+    }
+
     private static final Gson gson = new Gson();
 
     public static Header toHeader(String json) throws InvalidHeaderException {

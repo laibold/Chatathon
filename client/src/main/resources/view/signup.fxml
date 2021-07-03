@@ -40,6 +40,6 @@
 
     </VBox>
 
-    <Text text="To Login" onMouseClicked="#navigateToSignIn"/>
+    <Text text="To login" onMouseClicked="#navigateToSignIn"/>
 
 </VBox>
