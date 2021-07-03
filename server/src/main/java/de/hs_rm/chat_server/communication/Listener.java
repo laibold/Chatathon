@@ -86,13 +86,17 @@ public class Listener {
                     // RESPONSE
                     //
 
-                    System.out.printf("Sende an Client (%s): %s%n", connectionSocket.getRemoteSocketAddress(), header.getMessageType());
-                    outToClient.writeBytes(header.getMessageType() + "\n");
                     // Brauchen wir "outToClient.flush();"?
+
+                    var messageTypeHandler = new MessageTypeHandler();
+
+                    var response = messageTypeHandler.handleMessage(header.getMessageType(), body);
+                    System.out.printf("Sende an Client (%s): %s%n", connectionSocket.getRemoteSocketAddress(), response);
+                    outToClient.writeBytes(response + "\n");
                 } else {
                     connected = false;
                 }
-            } catch (IOException e) {
+            } catch (IOException | InvalidHeaderException e) {
                 System.out.println(e.getMessage());
                 return;
             }

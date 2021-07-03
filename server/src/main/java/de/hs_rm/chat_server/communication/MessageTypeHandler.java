@@ -20,10 +20,8 @@ public class MessageTypeHandler {
 
     public String handleMessage(MessageType messageType, String body) throws InvalidHeaderException {
         var handler = handlers.get(messageType);
-        var responseBody = handler.handle(body);
 
-        // TODO
-        return MessageGenerator.generateMessage(Header.Status.SUCCESS, handler.getResponseMessageType(), responseBody);
+        return handler.handle(body);
     }
 
 
