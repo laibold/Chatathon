@@ -18,16 +18,27 @@ public class SignUpMessageHandler extends MessageHandler {
     @Override
     public String handle(Message message) {
         var user = gson.fromJson(message.getBody(), User.class);
+        Header.Status status;
+        String bodyContent;
+
         try {
             userService.insertUser(user);
-        } catch (PersistenceException | UserAlreadyExistsException e) {
-            e.printStackTrace();
+            status = Header.Status.SUCCESS;
+            bodyContent = "";
+        } catch (PersistenceException e) {
+            status = Header.Status.ERROR;
+            bodyContent = "General failure";
+        } catch (UserAlreadyExistsException e) {
+            status = Header.Status.ERROR;
+            bodyContent = "User already exists";
         }
+
         try {
-            return MessageGenerator.generateMessage(Header.Status.SUCCESS, getResponseMessageType(), "");
+            return MessageGenerator.generateMessage(status, getResponseMessageType(), bodyContent);
         } catch (InvalidHeaderException e) {
             e.printStackTrace();
         }
+
         return null;
     }
 
