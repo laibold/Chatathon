@@ -42,16 +42,11 @@ public class SignInMessageHandler extends MessageHandler {
         }
 
         try {
-            return MessageGenerator.generateMessage(status, getResponseMessageType(), bodyContent);
+            return MessageGenerator.generateMessage(status, MessageType.SIGN_IN_RESPONSE, bodyContent);
         } catch (InvalidHeaderException e) {
             e.printStackTrace();
         }
 
         return null;
-    }
-
-    @Override
-    public MessageType getResponseMessageType() {
-        return MessageType.SIGN_IN_RESPONSE;
     }
 }

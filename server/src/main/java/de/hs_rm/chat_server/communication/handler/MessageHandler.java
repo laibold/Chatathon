@@ -10,6 +10,4 @@ public abstract class MessageHandler {
 
     public abstract String handle(Message message);
 
-    public abstract MessageType getResponseMessageType();
-
 }

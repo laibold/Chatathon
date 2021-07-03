@@ -34,16 +34,11 @@ public class SignUpMessageHandler extends MessageHandler {
         }
 
         try {
-            return MessageGenerator.generateMessage(status, getResponseMessageType(), bodyContent);
+            return MessageGenerator.generateMessage(status, MessageType.SIGN_UP_RESPONSE, bodyContent);
         } catch (InvalidHeaderException e) {
             e.printStackTrace();
         }
 
         return null;
-    }
-
-    @Override
-    public MessageType getResponseMessageType() {
-        return MessageType.SIGN_UP_RESPONSE;
     }
 }
