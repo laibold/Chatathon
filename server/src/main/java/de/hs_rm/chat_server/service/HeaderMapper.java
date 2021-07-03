@@ -17,7 +17,7 @@ public class HeaderMapper {
             var header = gson.fromJson(json, Header.class);
 
             if (header.getMessageType() == null) {
-                throw new InvalidHeaderException("MessageType not existing.");
+                throw new InvalidHeaderException("MessageType is null.");
             }
 
             if (header.getContentLength() == 0) {
