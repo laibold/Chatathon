@@ -4,13 +4,15 @@ import de.hs_rm.chat_server.model.client.Client;
 import de.hs_rm.chat_server.model.user.User;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class ClientService {
 
     private static ClientService instance;
     private final HashMap<User, Client> clients = new HashMap<>();
 
-    private ClientService() {}
+    private ClientService() {
+    }
 
     public static synchronized ClientService getInstance() {
         if (ClientService.instance == null) {
@@ -20,7 +22,7 @@ public class ClientService {
         return ClientService.instance;
     }
 
-    public HashMap<User, Client> getClients() {
+    public Map<User, Client> getClients() {
         return this.clients;
     }
 
