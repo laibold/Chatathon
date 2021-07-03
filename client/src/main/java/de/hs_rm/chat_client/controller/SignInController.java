@@ -27,7 +27,7 @@ public class SignInController extends BaseController implements StateObserver {
     @FXML
     public void initialize() {
         messageService = MessageService.getInstance();
-        ClientState.getInstance().addObserver(this, ClientState.State.SIGNED_UP);
+        ClientState.getInstance().addObserver(this, ClientState.State.SIGNED_IN);
     }
 
     @FXML
@@ -60,6 +60,6 @@ public class SignInController extends BaseController implements StateObserver {
 
     @Override
     public void navigateToNext() {
-        System.out.println("Start chatting!"); // TODO
+        navigateTo(new ChatController());
     }
 }

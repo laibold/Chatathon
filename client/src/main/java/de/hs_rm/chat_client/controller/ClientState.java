@@ -11,7 +11,7 @@ public class ClientState {
     private final Map<State, StateObserver> stateOberserverMap = new EnumMap<>(State.class);
     private State currentState = State.STRANGER;
 
-    public enum State {STRANGER, SIGNED_UP, LOGGED_IN}
+    public enum State {STRANGER, SIGNED_UP, SIGNED_IN}
 
     private ClientState() {
     }

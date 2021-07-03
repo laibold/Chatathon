@@ -52,11 +52,18 @@ public class MessageService {
         writeMessage(message);
     }
 
+    public void sendActiveUserListRequest() throws InvalidHeaderException, IOException {
+        var message = MessageGenerator.generateMessage(MessageType.LIST_ACTIVE_USERS, "");
+
+        writeMessage(message);
+    }
+
     private void writeMessage(String messageString) throws IOException {
         writer.write(messageString);
         writer.flush();
     }
 
+    // TODO hier bisschen auslagern und direkt in Threads auslagern
     private void listen() {
         new Thread(() -> {
             while (true) {
@@ -90,7 +97,7 @@ public class MessageService {
                                     clientState.setCurrentState(ClientState.State.SIGNED_UP);
                                     break;
                                 case SIGN_IN_RESPONSE:
-                                    clientState.setCurrentState(ClientState.State.LOGGED_IN);
+                                    clientState.setCurrentState(ClientState.State.SIGNED_IN);
                                     break;
                                 default:
                                     break;
@@ -98,7 +105,6 @@ public class MessageService {
                         } else {
                             // TODO error handling
                         }
-
                     }
 
                 } catch (IOException e) {

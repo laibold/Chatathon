@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<GridPane alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+          prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/15" xmlns:fx="http://javafx.com/fxml">
+    <columnConstraints>
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="0.0" minWidth="0.0" percentWidth="20.0" prefWidth="0.0"/>
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="0.0" minWidth="0.0" percentWidth="70.0" prefWidth="0.0"/>
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="0.0" minWidth="0.0" percentWidth="10.0" prefWidth="0.0"/>
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints minHeight="10.0" percentHeight="20.0" prefHeight="0.0" vgrow="SOMETIMES"/>
+        <RowConstraints maxHeight="0.0" minHeight="10.0" percentHeight="80.0" prefHeight="0.0" vgrow="SOMETIMES"/>
+        <RowConstraints maxHeight="0.0" minHeight="10.0" percentHeight="30.0" prefHeight="0.0" vgrow="SOMETIMES"/>
+    </rowConstraints>
+    <children>
+        <TextArea prefHeight="Infinity" prefWidth="Infinity" style="-fx-background-color: green;"
+                  GridPane.columnIndex="1" GridPane.rowIndex="2" fx:id="chatTextArea"/>
+        <ListView prefHeight="Infinity" prefWidth="Infinity" style="-fx-background-color: red;" GridPane.rowIndex="1"
+                  GridPane.rowSpan="3"/>
+        <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" prefHeight="Infinity"
+                prefWidth="Infinity" text="refresh" onAction="#refreshUserList"/>
+        <Button alignment="CENTER" mnemonicParsing="false" prefHeight="Infinity" prefWidth="Infinity" text="send"
+                GridPane.columnIndex="2" GridPane.rowIndex="2" onAction="#sendChat"/>
+        <Label prefHeight="Infinity" prefWidth="Infinity" style="-fx-background-color: yellow;" GridPane.columnIndex="1"
+               GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS"/>
+    </children>
+</GridPane>
