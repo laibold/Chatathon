@@ -1,9 +1,10 @@
-package de.hs_rm.chat_client.service;
+package de.hs_rm.chat_client.communication;
 
 import com.google.gson.Gson;
 import de.hs_rm.chat_client.model.header.Header;
 import de.hs_rm.chat_client.model.header.InvalidHeaderException;
 import de.hs_rm.chat_client.model.header.MessageType;
+import de.hs_rm.chat_client.service.HeaderMapper;
 
 public class MessageGenerator {
 

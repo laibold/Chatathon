@@ -12,11 +12,12 @@ class HeaderMapperTest {
 
     @Test
     void canMapJsonToHeader() throws InvalidHeaderException {
-        var json = "{\"messageType\":\"CHAT_REQUEST\",\"contentLength\":123}";
+        var json = "{\"messageType\":\"CHAT_REQUEST\",\"contentLength\":123,\"status\":\"SUCCESS\"}";
         var header = HeaderMapper.toHeader(json);
 
         assertEquals(MessageType.CHAT_REQUEST, header.getMessageType());
         assertEquals(123, header.getContentLength());
+        assertEquals(Header.Status.SUCCESS, header.getStatus());
     }
 
     @Test
