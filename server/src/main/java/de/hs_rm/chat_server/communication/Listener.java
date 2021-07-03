@@ -9,76 +9,89 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class Listener {
-    private ServerSocket serverSocket;
-    private int port;
+    private ServerSocket welcomeSocket;
 
     public Listener(int port) {
         try {
-            this.port = port;
-            this.serverSocket = new ServerSocket(port);
+            this.welcomeSocket = new ServerSocket(port);
+            System.out.println("Warte auf Client...");
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public void listen() {
-        System.out.println("LISTENING ON PORT:\t" + this.port);
-
         while (true) {
             try {
-                final var socket = serverSocket.accept();
-                System.out.println("CLIENT CONNECTED:\t" + socket.getRemoteSocketAddress());
+                final Socket connectionSocket = this.welcomeSocket.accept();
+                System.out.println("Client hat sich verbunden: " + connectionSocket.getInetAddress());
 
-                new Thread(() -> {
-                    final BufferedReader reader;
+                final Thread thread = new Thread(() ->  {
+                    BufferedReader inFromClient = null;
+                    DataOutputStream outToClient = null;
+
                     try {
-                        reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                        final var writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-
-                        handleRequests(socket, reader, writer);
+                        inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
+                        outToClient = new DataOutputStream(connectionSocket.getOutputStream());
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                }).start();
+
+                    handleRequests(connectionSocket, inFromClient, outToClient);
+                });
+                thread.start();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    private void handleRequests(final Socket socket, final BufferedReader reader, final BufferedWriter writer) {
-        while (true) {
+    private void handleRequests(final Socket connectionSocket, final BufferedReader inFromClient, final DataOutputStream outToClient) {
+        boolean connected = true;
+
+        while (connected) {
+            final String line;
             try {
-                // Parse header to get body length
-                var headerString = reader.readLine();
+                line = inFromClient.readLine();
+                if (line != null) {
+                    System.out.printf("Vom Client (%s) empfangen: %s%n", connectionSocket.getRemoteSocketAddress(), line);
 
-                if (headerString == null || headerString.equals("")) {
-                    return; // TODO
-                }
+                    //
+                    // PARSE HEADER AND BODY
+                    //
 
-                Header header = null;
-                try {
-                    header = HeaderMapper.toHeader(headerString);
-                } catch (InvalidHeaderException e) {
-                    e.printStackTrace(); // TODO
-                }
+                    Header header = null;
 
-                assert header != null;
-                var chars = new char[header.getContentLength()];
+                    try {
+                        header = HeaderMapper.toHeader(line);
+                    } catch (InvalidHeaderException e) {
+                        e.printStackTrace();
+                    }
 
-                String body;
-                var charsRead = reader.read(chars, 0, header.getContentLength());
-                if (charsRead != -1) {
-                    body = new String(chars, 0, charsRead);
+                    assert header != null;
+                    var chars = new char[header.getContentLength()];
+
+                    String body;
+                    var charsRead = inFromClient.read(chars, 0, header.getContentLength());
+                    if (charsRead != -1) {
+                        body = new String(chars, 0, charsRead);
+                    } else {
+                        body = null;
+                    }
+
+                    System.out.println(header);
+                    System.out.println(body);
+
+                    //
+                    // RESPONSE
+                    //
+
+                    System.out.printf("Sende an Client (%s): %s%n", connectionSocket.getRemoteSocketAddress(), header.getMessageType());
+                    outToClient.writeBytes(header.getMessageType() + "\n");
+                    // Brauchen wir "outToClient.flush();"?
                 } else {
-                    body = "";
+                    connected = false;
                 }
-
-                System.out.println("INCOMING (" + socket.getRemoteSocketAddress().toString() + "):\t" + headerString + " " + body);
-                // TODO: Forward message type and body to MessageHandler
-
-                writer.write("ok\n");
-                writer.flush();
             } catch (IOException e) {
                 System.out.println(e.getMessage());
                 return;
