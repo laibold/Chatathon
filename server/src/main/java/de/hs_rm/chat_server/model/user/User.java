@@ -1,4 +1,4 @@
-package de.hs_rm.chat_server.domain.user;
+package de.hs_rm.chat_server.model.user;
 
 public class User {
 

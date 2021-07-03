@@ -3,7 +3,7 @@ plugins {
     id 'application'
 }
 
-mainClassName = 'de.hs_rm.chat_server.Main'
+mainClassName = 'de.hs_rm.chat_server.Server'
 
 group 'de.hs_rm.chat_server'
 version '1.0'

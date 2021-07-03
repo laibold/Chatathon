@@ -1,6 +1,6 @@
 package de.hs_rm.chat_server.service;
 
-import de.hs_rm.chat_server.domain.user.User;
+import de.hs_rm.chat_server.model.user.User;
 import de.hs_rm.chat_server.model.user.UserAlreadyExistsException;
 import de.hs_rm.chat_server.model.user.UserNotFoundException;
 import de.hs_rm.chat_server.persistence.Database;
