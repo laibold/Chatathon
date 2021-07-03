@@ -30,10 +30,9 @@ public class Listener {
                         reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                         final var writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 
-                        // TODO: Parse requests
+                        // TODO: Parse header to get body length
 
-                        // TODO: Forward request - differentiate by using Enum
-
+                        // TODO: Forward message type and body to MessageHandler
 
                     } catch (IOException e) {
                         e.printStackTrace();
