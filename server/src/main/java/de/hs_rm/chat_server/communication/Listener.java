@@ -6,7 +6,10 @@ import de.hs_rm.chat_server.model.message.InvalidHeaderException;
 import de.hs_rm.chat_server.model.message.Message;
 import de.hs_rm.chat_server.service.HeaderMapper;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -28,7 +31,7 @@ public class Listener {
                 final var connectionSocket = this.welcomeSocket.accept();
                 System.out.println("Client hat sich verbunden: " + connectionSocket.getInetAddress() + "\n");
 
-                new Thread(() ->  {
+                new Thread(() -> {
                     BufferedReader inFromClient = null;
                     DataOutputStream outToClient = null;
 
@@ -60,7 +63,6 @@ public class Listener {
                     //
 
                     Header header = null;
-
                     try {
                         header = HeaderMapper.toHeader(line);
                     } catch (InvalidHeaderException e) {
@@ -93,7 +95,7 @@ public class Listener {
                     var message = new Message(header, body, client);
 
                     var response = messageTypeHandler.handleMessage(message);
-                    System.out.printf("Sende an Client (%s): %s%n\n", connectionSocket.getRemoteSocketAddress(), response);
+                    System.out.printf("Sende an Client (%s):\n%s%n\n", connectionSocket.getRemoteSocketAddress(), response);
                     outToClient.writeBytes(response + "\n");
                 } else {
                     connected = false;
