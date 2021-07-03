@@ -1,14 +1,16 @@
 package de.hs_rm.chat_server;
 
+import de.hs_rm.chat_server.communication.Listener;
+
 public class Server {
+
+    final static int PORT = 8080;
 
     public static void main(String[] args) {
         // TODO: Ist die Datenbank erreichbar?
 
-        int port = 8080;
-
-        // Listener listener = new Listener(port);
-        // listener.listen();
+        Listener listener = new Listener(PORT);
+        listener.listen();
 
         try {
             Thread.currentThread().join();
