@@ -29,8 +29,8 @@ public class Environment {
         try {
             controller.setEnvironment(this);
 
-            var viewPath = File.separator + "view" + File.separator + controller.getViewPath();
-            var loader = new FXMLLoader(controller.getClass().getResource(viewPath));
+            var viewPath = "view" + File.separator + controller.getViewPath();
+            var loader = new FXMLLoader(controller.getClass().getResource('/' + viewPath));
             loader.setController(controller);
             Parent root = loader.load();
             stage.setScene(new Scene(root));
