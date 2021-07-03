@@ -1,10 +1,10 @@
 package de.hs_rm.chat_server.communication.handler;
 
 import de.hs_rm.chat_server.communication.MessageGenerator;
-import de.hs_rm.chat_server.model.client.Client;
-import de.hs_rm.chat_server.model.header.Header;
-import de.hs_rm.chat_server.model.header.InvalidHeaderException;
-import de.hs_rm.chat_server.model.header.MessageType;
+import de.hs_rm.chat_server.model.message.Header;
+import de.hs_rm.chat_server.model.message.InvalidHeaderException;
+import de.hs_rm.chat_server.model.message.Message;
+import de.hs_rm.chat_server.model.message.MessageType;
 import de.hs_rm.chat_server.model.user.User;
 import de.hs_rm.chat_server.model.user.UserNotFoundException;
 import de.hs_rm.chat_server.service.ClientService;
@@ -17,8 +17,8 @@ public class SignInMessageHandler extends MessageHandler {
     private final ClientService clientService = ClientService.getInstance();
 
     @Override
-    public String handle(String body) {
-        var user = gson.fromJson(body, User.class);
+    public String handle(Message message) {
+        var user = gson.fromJson(message.getBody(), User.class);
 
         Header.Status status;
         String bodyContent;
@@ -28,7 +28,7 @@ public class SignInMessageHandler extends MessageHandler {
             if (credentialsValid) {
                 status = Header.Status.SUCCESS;
                 bodyContent = "";
-                //clientService.addClient(user, new Client());
+                clientService.addClient(user, message.getClient());
             } else {
                 status = Header.Status.ERROR;
                 bodyContent = "Username or password incorrect";

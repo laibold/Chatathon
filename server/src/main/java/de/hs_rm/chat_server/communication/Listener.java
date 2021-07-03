@@ -1,7 +1,9 @@
 package de.hs_rm.chat_server.communication;
 
-import de.hs_rm.chat_server.model.header.Header;
-import de.hs_rm.chat_server.model.header.InvalidHeaderException;
+import de.hs_rm.chat_server.model.client.Client;
+import de.hs_rm.chat_server.model.message.Header;
+import de.hs_rm.chat_server.model.message.InvalidHeaderException;
+import de.hs_rm.chat_server.model.message.Message;
 import de.hs_rm.chat_server.service.HeaderMapper;
 
 import java.io.*;
@@ -87,7 +89,10 @@ public class Listener {
 
                     var messageTypeHandler = new MessageTypeHandler();
 
-                    var response = messageTypeHandler.handleMessage(header.getMessageType(), body);
+                    var client = new Client(connectionSocket.getRemoteSocketAddress(), connectionSocket.getLocalPort());
+                    var message = new Message(header, body, client);
+
+                    var response = messageTypeHandler.handleMessage(message);
                     System.out.printf("Sende an Client (%s): %s%n\n", connectionSocket.getRemoteSocketAddress(), response);
                     outToClient.writeBytes(response + "\n");
                 } else {

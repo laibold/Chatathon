@@ -1,4 +1,4 @@
-package de.hs_rm.chat_server.model.header;
+package de.hs_rm.chat_server.model.message;
 
 public class Header {
     private MessageType messageType;

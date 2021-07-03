@@ -1,20 +1,22 @@
 package de.hs_rm.chat_server.model.client;
 
+import java.net.SocketAddress;
+
 public class Client {
 
-    private String ip;
+    private SocketAddress ip;
     private int port;
 
-    public Client(String ip, int port) {
+    public Client(SocketAddress ip, int port) {
         this.ip = ip;
         this.port = port;
     }
 
-    public String getIp() {
+    public SocketAddress getIp() {
         return ip;
     }
 
-    public void setIp(String ip) {
+    public void setIp(SocketAddress ip) {
         this.ip = ip;
     }
 
