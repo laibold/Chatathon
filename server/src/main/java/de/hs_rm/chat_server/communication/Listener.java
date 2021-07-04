@@ -91,7 +91,7 @@ public class Listener {
 
                     var messageTypeHandler = new MessageTypeHandler();
 
-                    var client = new Client(connectionSocket.getRemoteSocketAddress(), connectionSocket.getLocalPort());
+                    var client = new Client(connectionSocket);
                     var message = new Message(header, body, client);
 
                     var response = messageTypeHandler.handleMessage(message);
