@@ -35,9 +35,9 @@ public class UserService {
             database.insertUser(user.getUsername(), user.getPassword());
         } catch (SQLException e) {
             throw new PersistenceException(
-                "SQL Exception while inserting user with username " +
-                    user.getUsername() + ": " +
-                    e.getMessage()
+                    "SQL Exception while inserting user with username " +
+                            user.getUsername() + ": " +
+                            e.getMessage()
             );
         }
     }
@@ -59,12 +59,22 @@ public class UserService {
             queriedUser = database.getUser(user.getUsername());
         } catch (SQLException e) {
             throw new PersistenceException(
-                "SQL Exception while querying user with username " +
-                    user.getUsername() + ": " +
-                    e.getMessage()
+                    "SQL Exception while querying user with username " +
+                            user.getUsername() + ": " +
+                            e.getMessage()
             );
         }
 
+        return queriedUser;
+    }
+
+    public User getUserByName(String name) {
+        User queriedUser = null;
+        try {
+            queriedUser = database.getUser(name);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
         return queriedUser;
     }
 }
