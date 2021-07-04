@@ -6,17 +6,18 @@ import de.hs_rm.chat_client.controller.ClientState;
 import de.hs_rm.chat_client.controller.StateObserver;
 import de.hs_rm.chat_client.model.message.InvalidHeaderException;
 import javafx.application.Platform;
+import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
@@ -30,16 +31,28 @@ public class ChatController extends BaseController implements StateObserver, Cha
     @FXML
     private ListView<String> activeUserListView;
 
+    @FXML
+    private Label chatLabel;
+
     private MessageService messageService;
 
     private final SimpleIntegerProperty finalChatRequestState = new SimpleIntegerProperty(0);
     private final SimpleStringProperty finalChatRequestMessage = new SimpleStringProperty("");
+
+    private final ObservableList<String> observableList = FXCollections.observableArrayList(new ArrayList<>());
+    private final ListProperty<String> messageList = new SimpleListProperty<>(observableList);
+
 
     @FXML
     public void initialize() {
         messageService = MessageService.getInstance();
         var clientState = ClientState.getInstance();
         clientState.addChatHandler(this);
+
+        messageList.addListener((o, oldVal, newVal) -> {
+            var messages = String.join("\n", newVal);
+            chatLabel.setText(messages);
+        });
     }
 
     @FXML
@@ -58,6 +71,10 @@ public class ChatController extends BaseController implements StateObserver, Cha
     private void sendChat(ActionEvent event) {
         var text = chatTextArea.getText().trim();
         if (!text.isBlank()) {
+            var str = "You: " + text;
+            messageList.add(str);
+            chatTextArea.clear();
+            chatTextArea.requestFocus();
             System.out.println("Send " + text);
         }
     }

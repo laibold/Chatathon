@@ -98,7 +98,7 @@ public class Listener {
                 } else {
                     connected = false;
                 }
-            } catch (IOException | InvalidHeaderException e) {
+            } catch (IOException e) {
                 System.out.println(e.getMessage());
                 return;
             }

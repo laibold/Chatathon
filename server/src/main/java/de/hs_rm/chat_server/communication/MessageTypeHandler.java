@@ -20,7 +20,7 @@ public class MessageTypeHandler {
         handlers.put(MessageType.OUTGOING_CHAT_REQUEST_RESPONSE, new OutgoingChatRequestResponseMessageHandler());
     }
 
-    public String handleMessage(Message message) throws InvalidHeaderException {
+    public String handleMessage(Message message) {
         var handler = handlers.get(message.getHeader().getMessageType());
 
         return handler.handle(message);
