@@ -1,6 +1,7 @@
 package de.hs_rm.chat_server.communication.handler;
 
 import de.hs_rm.chat_server.communication.MessageGenerator;
+import de.hs_rm.chat_server.model.client.Client;
 import de.hs_rm.chat_server.model.message.Header;
 import de.hs_rm.chat_server.model.message.InvalidHeaderException;
 import de.hs_rm.chat_server.model.message.Message;
@@ -20,13 +21,14 @@ public class IncomingChatRequestMessageHandler extends MessageHandler {
 
         Header.Status status;
         String bodyContent;
+        Client recipient = null;
 
         if (queriedUser == null) {
             status = Header.Status.ERROR;
             bodyContent = "User does not exist";
         } else {
-            var client = clientService.getClient(queriedUser);
-            if (client == null) {
+            recipient = clientService.getClient(queriedUser);
+            if (recipient == null) {
                 status = Header.Status.ERROR;
                 bodyContent = "User not active";
             } else {
@@ -36,6 +38,10 @@ public class IncomingChatRequestMessageHandler extends MessageHandler {
         }
 
         try {
+            if (status == Header.Status.SUCCESS) {
+                var outgoingChatRequestMessageHandler = new OutgoingChatRequestMessageHandler();
+                outgoingChatRequestMessageHandler.sendOutgoingChatRequestMessage(message.getClient(), recipient);
+            }
             return MessageGenerator.generateMessage(status, MessageType.INCOMING_CHAT_REQUEST_RESPONSE, bodyContent);
         } catch (InvalidHeaderException e) {
             e.printStackTrace();
