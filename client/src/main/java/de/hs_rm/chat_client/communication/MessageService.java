@@ -1,6 +1,7 @@
 package de.hs_rm.chat_client.communication;
 
 import de.hs_rm.chat_client.controller.ClientState;
+import de.hs_rm.chat_client.model.chat_message.IncomingChatRequest;
 import de.hs_rm.chat_client.model.message.Header;
 import de.hs_rm.chat_client.model.message.InvalidHeaderException;
 import de.hs_rm.chat_client.model.message.MessageType;
@@ -13,7 +14,7 @@ import java.net.Socket;
 
 public class MessageService {
 
-    private static final String REMOTE_HOST = "192.168.0.22";
+    private static final String REMOTE_HOST = "localhost";
     private static final int REMOTE_PORT = 8080;
 
     private static MessageService instance;
@@ -59,8 +60,9 @@ public class MessageService {
         writeMessage(message);
     }
 
-    public void sendChatRequest(String username) throws InvalidHeaderException, IOException {
-        var message = MessageGenerator.generateMessage(MessageType.INCOMING_CHAT_REQUEST, username);
+    public void sendChatRequest(String recipient) throws InvalidHeaderException, IOException {
+        var incomingChatRequest = new IncomingChatRequest(clientState.getCurrentUser(), recipient);
+        var message = MessageGenerator.generateMessage(MessageType.INCOMING_CHAT_REQUEST, incomingChatRequest);
 
         writeMessage(message);
     }
