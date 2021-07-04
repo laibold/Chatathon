@@ -2,10 +2,10 @@ package de.hs_rm.chat_client.communication;
 
 import de.hs_rm.chat_client.controller.ClientState;
 import de.hs_rm.chat_client.model.chat_message.IncomingChatRequest;
+import de.hs_rm.chat_client.model.chat_message.OutgoingChatRequestResponse;
 import de.hs_rm.chat_client.model.message.Header;
 import de.hs_rm.chat_client.model.message.InvalidHeaderException;
 import de.hs_rm.chat_client.model.message.MessageType;
-import de.hs_rm.chat_client.model.chat_message.OutgoingChatMessage;
 import de.hs_rm.chat_client.model.user.User;
 import de.hs_rm.chat_client.service.HeaderMapper;
 
@@ -67,8 +67,8 @@ public class MessageService {
         writeMessage(message);
     }
 
-    public void sendChatRequestResponse(String recipientUsername, boolean acceptance) throws InvalidHeaderException, IOException {
-        var response = new OutgoingChatMessage(recipientUsername, acceptance);
+    public void sendChatRequestResponse(String recipientUsername, boolean accepted) throws InvalidHeaderException, IOException {
+        var response = new OutgoingChatRequestResponse(recipientUsername, accepted);
         var message = MessageGenerator.generateMessage(MessageType.OUTGOING_CHAT_REQUEST_RESPONSE, response);
 
         writeMessage(message);

@@ -1,4 +1,4 @@
-package de.hs_rm.chat_server.model.message;
+package de.hs_rm.chat_client.model.chat_message;
 
 public class OutgoingChatRequestResponse {
 

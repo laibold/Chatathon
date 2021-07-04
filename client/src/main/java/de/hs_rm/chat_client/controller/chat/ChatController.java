@@ -154,26 +154,26 @@ public class ChatController extends BaseController implements StateObserver, Cha
             alert.setHeaderText("Chat request");
             alert.setTitle("Incoming chat request");
 
-            var acceptance = false;
+            var accepted = false;
 
             Optional<ButtonType> result = alert.showAndWait();
             if (result.isEmpty()) {
                 // alert is exited, no button has been pressed.
                 // TODO auf windows testen, ob man beim Fenster schließen hier landet
                 System.out.println("exited");
-                acceptance = false;
+                accepted = false;
             } else if (result.get() == ButtonType.YES) {
                 //oke button is pressed
                 System.out.println("yes");
-                acceptance = true;
+                accepted = true;
             } else if (result.get() == ButtonType.NO) {
                 // cancel button is pressed
                 System.out.println("no");
-                acceptance = false;
+                accepted = false;
             }
 
             try {
-                messageService.sendChatRequestResponse(username, acceptance);
+                messageService.sendChatRequestResponse(username, accepted);
             } catch (InvalidHeaderException e) {
                 e.printStackTrace();
             } catch (IOException e) {

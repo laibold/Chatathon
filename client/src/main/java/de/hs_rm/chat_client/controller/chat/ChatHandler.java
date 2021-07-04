@@ -1,7 +1,5 @@
 package de.hs_rm.chat_client.controller.chat;
 
-import de.hs_rm.chat_client.model.chat_message.OutgoingChatMessage;
-
 import java.util.List;
 
 public interface ChatHandler {
