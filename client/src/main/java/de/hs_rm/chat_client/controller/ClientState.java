@@ -1,13 +1,12 @@
 package de.hs_rm.chat_client.controller;
 
 import com.google.gson.Gson;
-import de.hs_rm.chat_client.controller.FinalChatRequestResponseObserver.ChatRequestState;
 import com.google.gson.reflect.TypeToken;
+import de.hs_rm.chat_client.controller.ChatHandler.ChatRequestState;
 import de.hs_rm.chat_client.model.header.Header;
 import de.hs_rm.chat_client.model.header.MessageType;
 import javafx.application.Platform;
 
-import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -17,8 +16,7 @@ public class ClientState {
 
     private static ClientState instance;
     private final Map<State, StateObserver> stateOberserverMap = new EnumMap<>(State.class);
-    private final ArrayList<UserListObserver> userListObserverList = new ArrayList<>();
-    private FinalChatRequestResponseObserver finalChatRequestResponseObserver = null;
+    private ChatHandler chatHandler;
     private String currentUser;
     private final Gson gson = new Gson();
 
@@ -55,12 +53,12 @@ public class ClientState {
         stateOberserverMap.put(state, observer);
     }
 
-    public void addUserListObserver(UserListObserver observer) {
-        userListObserverList.add(observer);
+    public void addUserListObserver(ChatHandler observer) {
+        chatHandler = observer;
     }
 
-    public void setFinalChatRequestResponseObserver(FinalChatRequestResponseObserver observer) {
-        finalChatRequestResponseObserver = observer;
+    public void setFinalChatRequestResponseObserver(ChatHandler observer) {
+        chatHandler = observer;
     }
 
     public State getCurrentState() {
@@ -84,17 +82,15 @@ public class ClientState {
             .filter(user -> !user.equals(currentUser))
             .collect(Collectors.toList());
 
-        for (var observer : userListObserverList) {
-            observer.setUserList(userList);
-        }
+        chatHandler.setUserList(userList);
     }
 
     public void setFinalChatRequestResponseState(Header.Status status, MessageType messageType, String body) {
-        if (finalChatRequestResponseObserver == null) {
+        if (chatHandler == null) {
             return;
         }
 
-        var chatRequestState = FinalChatRequestResponseObserver.ChatRequestState.UNINITIALIZED;
+        var chatRequestState = ChatHandler.ChatRequestState.UNINITIALIZED;
         var errorMessage = "";
 
         if (messageType == MessageType.INCOMING_CHAT_REQUEST_RESPONSE) {
@@ -121,7 +117,7 @@ public class ClientState {
             }
         }
 
-        finalChatRequestResponseObserver.setFinalChatRequestState(chatRequestState, errorMessage);
+        chatHandler.setFinalChatRequestState(chatRequestState, errorMessage);
     }
 
 }

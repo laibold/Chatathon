@@ -1,7 +1,10 @@
 package de.hs_rm.chat_client.controller.chat;
 
 import de.hs_rm.chat_client.communication.MessageService;
-import de.hs_rm.chat_client.controller.*;
+import de.hs_rm.chat_client.controller.BaseController;
+import de.hs_rm.chat_client.controller.ChatHandler;
+import de.hs_rm.chat_client.controller.ClientState;
+import de.hs_rm.chat_client.controller.StateObserver;
 import de.hs_rm.chat_client.model.header.InvalidHeaderException;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -18,7 +21,7 @@ import java.io.IOException;
 import java.util.List;
 
 
-public class ChatController extends BaseController implements StateObserver, UserListObserver, FinalChatRequestResponseObserver {
+public class ChatController extends BaseController implements StateObserver, ChatHandler {
 
     @FXML
     private TextArea chatTextArea;
