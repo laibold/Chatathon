@@ -5,6 +5,10 @@ public class OutgoingChatRequestResponse {
     private String username;
     private boolean accepted;
 
+    public OutgoingChatRequestResponse() {
+
+    }
+
     public OutgoingChatRequestResponse(String username, boolean accepted) {
         this.username = username;
         this.accepted = accepted;
