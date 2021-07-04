@@ -78,6 +78,12 @@ public class ChatController extends BaseController implements StateObserver, Use
                     .getSelectionModel()
                     .getSelectedItem();
 
+                try {
+                    messageService.sendChatRequest(currentItemSelected);
+                } catch (InvalidHeaderException | IOException e) {
+                    e.printStackTrace();
+                }
+
                 System.out.println(currentItemSelected + " angefragt");
 
                 var alert = new Alert(Alert.AlertType.INFORMATION, "angefragt");
