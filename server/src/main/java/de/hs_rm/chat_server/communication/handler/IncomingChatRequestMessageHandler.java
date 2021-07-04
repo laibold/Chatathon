@@ -36,7 +36,7 @@ public class IncomingChatRequestMessageHandler extends MessageHandler {
         }
 
         try {
-            return MessageGenerator.generateMessage(status, MessageType.CHAT_REQUEST_RESPONSE, bodyContent);
+            return MessageGenerator.generateMessage(status, MessageType.INCOMING_CHAT_REQUEST_RESPONSE, bodyContent);
         } catch (InvalidHeaderException e) {
             e.printStackTrace();
         }
