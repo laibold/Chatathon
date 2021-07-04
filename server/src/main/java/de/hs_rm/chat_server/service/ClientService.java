@@ -9,7 +9,7 @@ import java.util.Map;
 public class ClientService {
 
     private static ClientService instance;
-    private final HashMap<User, Client> clients = new HashMap<>();
+    private final HashMap<String, Client> clients = new HashMap<>();
 
     private ClientService() {
     }
@@ -22,20 +22,20 @@ public class ClientService {
         return ClientService.instance;
     }
 
-    public Map<User, Client> getClients() {
+    public Map<String, Client> getClients() {
         return this.clients;
     }
 
-    public void addClient(User user, Client client) {
-        clients.put(user, client);
+    public void addClient(String username, Client client) {
+        clients.put(username, client);
     }
 
-    public void deleteClient(User user) {
-        clients.remove(user);
+    public void deleteClient(String username) {
+        clients.remove(username);
     }
 
-    public Client getClient(User user) {
-        return clients.get(user);
+    public Client getClient(String username) {
+        return clients.get(username);
     }
 
 }

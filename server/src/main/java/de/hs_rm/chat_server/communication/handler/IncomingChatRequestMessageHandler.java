@@ -27,7 +27,7 @@ public class IncomingChatRequestMessageHandler extends MessageHandler {
             status = Header.Status.ERROR;
             bodyContent = "User does not exist";
         } else {
-            recipient = clientService.getClient(queriedUser);
+            recipient = clientService.getClient(queriedUser.getUsername());
             if (recipient == null) {
                 status = Header.Status.ERROR;
                 bodyContent = "User not active";
