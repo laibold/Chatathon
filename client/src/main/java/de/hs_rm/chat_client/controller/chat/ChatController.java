@@ -157,19 +157,16 @@ public class ChatController extends BaseController implements StateObserver, Cha
             var accepted = false;
 
             Optional<ButtonType> result = alert.showAndWait();
-            if (result.isEmpty()) {
-                // alert is exited, no button has been pressed.
-                // TODO auf windows testen, ob man beim Fenster schließen hier landet
-                System.out.println("exited");
-                accepted = false;
-            } else if (result.get() == ButtonType.YES) {
-                //oke button is pressed
-                System.out.println("yes");
-                accepted = true;
-            } else if (result.get() == ButtonType.NO) {
-                // cancel button is pressed
-                System.out.println("no");
-                accepted = false;
+            if (result.isPresent()) {
+                if (result.get() == ButtonType.YES) {
+                    //ok button is pressed
+                    System.out.println("yes");
+                    accepted = true;
+                } else if (result.get() == ButtonType.NO) {
+                    // cancel button is pressed
+                    System.out.println("no");
+                    accepted = false;
+                }
             }
 
             try {
