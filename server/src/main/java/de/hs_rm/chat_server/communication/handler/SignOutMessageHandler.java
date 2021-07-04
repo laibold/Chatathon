@@ -15,7 +15,7 @@ public class SignOutMessageHandler extends MessageHandler {
         var user = userService.getUserByName(username);
 
         if (user != null) {
-            clientService.deleteClient(user);
+            clientService.deleteClient(user.getUsername());
         }
 
         return null;

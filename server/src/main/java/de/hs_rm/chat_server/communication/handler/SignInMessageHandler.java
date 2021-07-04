@@ -28,7 +28,7 @@ public class SignInMessageHandler extends MessageHandler {
             if (credentialsValid) {
                 status = Header.Status.SUCCESS;
                 bodyContent = "";
-                clientService.addClient(user, message.getClient());
+                clientService.addClient(user.getUsername(), message.getClient());
             } else {
                 status = Header.Status.ERROR;
                 bodyContent = "Username or password incorrect";

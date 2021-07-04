@@ -17,9 +17,7 @@ public class ListActiveUsersMessageHandler extends MessageHandler {
     @Override
     // Returns active Clients as keySet
     public String handle(Message message) {
-        var activeClients = clientService.getClients().keySet().stream()
-            .map(User::getUsername)
-            .collect(Collectors.toList());
+        var activeClients = clientService.getClients().keySet();
 
         try {
             return MessageGenerator.generateMessage(Header.Status.SUCCESS, MessageType.LIST_ACTIVE_USERS_RESPONSE, activeClients);
