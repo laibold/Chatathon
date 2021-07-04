@@ -6,10 +6,7 @@ import de.hs_rm.chat_server.model.message.InvalidHeaderException;
 import de.hs_rm.chat_server.model.message.Message;
 import de.hs_rm.chat_server.service.HeaderMapper;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -33,11 +30,11 @@ public class Listener {
 
                 new Thread(() -> {
                     BufferedReader inFromClient = null;
-                    DataOutputStream outToClient = null;
+                    BufferedWriter outToClient = null;
 
                     try {
                         inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
-                        outToClient = new DataOutputStream(connectionSocket.getOutputStream());
+                        outToClient = new BufferedWriter(new OutputStreamWriter(connectionSocket.getOutputStream())); // new DataOutputStream(connectionSocket.getOutputStream());
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -50,7 +47,7 @@ public class Listener {
         }
     }
 
-    private void handleRequests(final Socket connectionSocket, final BufferedReader inFromClient, final DataOutputStream outToClient) {
+    private void handleRequests(final Socket connectionSocket, final BufferedReader inFromClient, final BufferedWriter outToClient) {
         var connected = true;
 
         while (connected) {
@@ -96,7 +93,8 @@ public class Listener {
 
                     var response = messageTypeHandler.handleMessage(message);
                     System.out.printf("Sende an Client (%s):\n%s%n\n", connectionSocket.getRemoteSocketAddress(), response);
-                    outToClient.writeBytes(response + "\n");
+                    outToClient.write(response + "\n");
+                    outToClient.flush();
                 } else {
                     connected = false;
                 }
