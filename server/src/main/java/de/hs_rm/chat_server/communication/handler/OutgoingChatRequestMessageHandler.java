@@ -12,7 +12,7 @@ import java.io.OutputStreamWriter;
 
 public class OutgoingChatRequestMessageHandler {
 
-    public void sendOutgoingChatRequestMessage(Client sender, Client recipient) {
+    public void sendOutgoingChatRequestMessage(Client recipient, String username) {
         var clientSocket = recipient.getSocket();
         BufferedWriter outToClient = null;
 
@@ -25,7 +25,7 @@ public class OutgoingChatRequestMessageHandler {
         String outgoingRequest = null;
 
         try {
-            outgoingRequest = MessageGenerator.generateMessage(Header.Status.SUCCESS, MessageType.OUTGOING_CHAT_REQUEST, sender + " wants to chat with you");
+            outgoingRequest = MessageGenerator.generateMessage(Header.Status.SUCCESS, MessageType.OUTGOING_CHAT_REQUEST, username);
         } catch (InvalidHeaderException e) {
             e.printStackTrace();
         }

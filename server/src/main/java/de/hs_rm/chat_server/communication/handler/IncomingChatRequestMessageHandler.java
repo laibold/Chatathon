@@ -40,7 +40,7 @@ public class IncomingChatRequestMessageHandler extends MessageHandler {
         try {
             if (status == Header.Status.SUCCESS) {
                 var outgoingChatRequestMessageHandler = new OutgoingChatRequestMessageHandler();
-                outgoingChatRequestMessageHandler.sendOutgoingChatRequestMessage(message.getClient(), recipient);
+                outgoingChatRequestMessageHandler.sendOutgoingChatRequestMessage(recipient, username);
             }
             return MessageGenerator.generateMessage(status, MessageType.INCOMING_CHAT_REQUEST_RESPONSE, bodyContent);
         } catch (InvalidHeaderException e) {

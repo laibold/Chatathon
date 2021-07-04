@@ -1,26 +1,25 @@
 package de.hs_rm.chat_server.communication.handler;
 
 import de.hs_rm.chat_server.communication.MessageGenerator;
-import de.hs_rm.chat_server.model.message.Header;
-import de.hs_rm.chat_server.model.message.InvalidHeaderException;
-import de.hs_rm.chat_server.model.message.Message;
-import de.hs_rm.chat_server.model.message.MessageType;
+import de.hs_rm.chat_server.model.message.*;
 
 public class OutgoingChatRequestResponseMessageHandler extends MessageHandler {
     @Override
     public String handle(Message message) {
-        var chatAccepted = gson.fromJson(message.getBody(), Boolean.class);
+        var response = gson.fromJson(message.getBody(), OutgoingChatRequestResponse.class);
         var status = Header.Status.SUCCESS;
-        String bodyContent;
 
-        if (!chatAccepted) {
-            bodyContent = "false";
+        var finalChatRequestResponse = new FinalChatRequestResponse();
+
+        if (!response.getResponse()) {
+            finalChatRequestResponse.setResponse(false);
         } else {
-            bodyContent = "true";
+            finalChatRequestResponse.setResponse(true);
+            finalChatRequestResponse.setClient(message.getClient());
         }
 
         try {
-            return MessageGenerator.generateMessage(status, MessageType.FINAL_CHAT_REQUEST_RESPONSE, bodyContent);
+            return MessageGenerator.generateMessage(status, MessageType.FINAL_CHAT_REQUEST_RESPONSE, finalChatRequestResponse);
         } catch (InvalidHeaderException e) {
             e.printStackTrace();
         }
