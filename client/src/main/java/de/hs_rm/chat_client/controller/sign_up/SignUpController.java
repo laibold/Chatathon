@@ -1,9 +1,13 @@
-package de.hs_rm.chat_client.controller;
+package de.hs_rm.chat_client.controller.sign_up;
 
-import de.hs_rm.chat_client.communication.MessageService;
+import de.hs_rm.chat_client.controller.BaseController;
+import de.hs_rm.chat_client.controller.ClientState;
+import de.hs_rm.chat_client.controller.StateObserver;
+import de.hs_rm.chat_client.controller.sign_in.SignInController;
 import de.hs_rm.chat_client.model.header.InvalidHeaderException;
 import de.hs_rm.chat_client.model.user.User;
 import de.hs_rm.chat_client.service.PasswordHasher;
+import de.hs_rm.chat_client.communication.MessageService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -14,7 +18,7 @@ import javafx.scene.input.MouseEvent;
 
 import java.io.IOException;
 
-public class SignInController extends BaseController implements StateObserver {
+public class SignUpController extends BaseController implements StateObserver {
 
     @FXML
     private TextField usernameText;
@@ -27,11 +31,11 @@ public class SignInController extends BaseController implements StateObserver {
     @FXML
     public void initialize() {
         messageService = MessageService.getInstance();
-        ClientState.getInstance().addObserver(this, ClientState.State.SIGNED_IN);
+        ClientState.getInstance().addStateObserver(this, ClientState.State.SIGNED_UP);
     }
 
     @FXML
-    private void signIn(ActionEvent event) {
+    private void signUp(ActionEvent event) {
         if (usernameText.getText().isBlank() || passwordText.getText().isBlank()) {
             new Alert(Alert.AlertType.NONE, "Invalid input", ButtonType.CLOSE).showAndWait();
         } else {
@@ -39,7 +43,7 @@ public class SignInController extends BaseController implements StateObserver {
             var password = PasswordHasher.getHashedPassword(passwordText.getText().trim());
 
             try {
-                messageService.sendSignInMessage(new User(username, password));
+                messageService.sendSignUpMessage(new User(username, password));
             } catch (InvalidHeaderException e) {
                 new Alert(Alert.AlertType.ERROR, "Internal failure", ButtonType.CLOSE).showAndWait();
             } catch (IOException e) {
@@ -49,17 +53,17 @@ public class SignInController extends BaseController implements StateObserver {
     }
 
     @FXML
-    private void navigateToSignUp(MouseEvent event) {
-        navigateTo(new SignUpController());
+    private void navigateToSignIn(MouseEvent event) {
+        navigateTo(new SignInController());
     }
 
     @Override
     public String getViewPath() {
-        return "signin.fxml";
+        return "signup.fxml";
     }
 
     @Override
     public void navigateToNext() {
-        navigateTo(new ChatController());
+        navigateTo(new SignInController());
     }
 }

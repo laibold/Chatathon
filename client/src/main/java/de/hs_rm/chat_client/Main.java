@@ -1,6 +1,6 @@
 package de.hs_rm.chat_client;
 
-import de.hs_rm.chat_client.controller.SignUpController;
+import de.hs_rm.chat_client.controller.sign_in.SignInController;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
@@ -13,7 +13,7 @@ public class Main extends Application {
         primaryStage.minHeightProperty().setValue(500);
 
         var environment = new Environment(primaryStage);
-        environment.startWith(new SignUpController());
+        environment.startWith(new SignInController());
     }
 
     public static void main(String[] args) {

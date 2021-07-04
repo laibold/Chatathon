@@ -9,19 +9,20 @@ import de.hs_rm.chat_server.model.message.MessageType;
 public class OutgoingChatRequestResponseMessageHandler extends MessageHandler {
     @Override
     public String handle(Message message) {
-        var answer = gson.fromJson(message.getBody(), String.class);
-        Header.Status status;
+        var chatAccepted = gson.fromJson(message.getBody(), Boolean.class);
+        var status = Header.Status.SUCCESS;
         String bodyContent;
 
-        if (answer.toLowerCase().contains("declined")) {
-            status = Header.Status.ERROR;
-            bodyContent = "Chat request declined";
+        if (!chatAccepted) {
+            bodyContent = "false";
+        } else {
+            bodyContent = "true";
+        }
 
-            try {
-                return MessageGenerator.generateMessage(status, MessageType.FINAL_CHAT_REQUEST_RESPONSE, bodyContent);
-            } catch (InvalidHeaderException e) {
-                e.printStackTrace();
-            }
+        try {
+            return MessageGenerator.generateMessage(status, MessageType.FINAL_CHAT_REQUEST_RESPONSE, bodyContent);
+        } catch (InvalidHeaderException e) {
+            e.printStackTrace();
         }
 
         return null;
