@@ -13,7 +13,7 @@ public class OutgoingChatRequestResponseMessageHandler extends MessageHandler {
 
         var finalChatRequestResponse = new FinalChatRequestResponse();
 
-        if (!response.getResponse()) {
+        if (!response.getAcceptance()) {
             finalChatRequestResponse.setAcceptance(false);
         } else {
             finalChatRequestResponse.setAcceptance(true);

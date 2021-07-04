@@ -12,7 +12,7 @@ import java.net.Socket;
 
 public class MessageService {
 
-    private static final String REMOTE_HOST = "localhost";
+    private static final String REMOTE_HOST = "192.168.0.22";
     private static final int REMOTE_PORT = 8080;
 
     private static MessageService instance;
