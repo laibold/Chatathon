@@ -91,6 +91,10 @@ public class MessageService {
                             body = null;
                         }
 
+                        System.out.println("Empfangen:");
+                        System.out.println(header);
+                        System.out.println(body + "\n");
+
                         if (header.getStatus() == Header.Status.SUCCESS) {
                             switch (header.getMessageType()) {
                                 case SIGN_UP_RESPONSE:
@@ -98,6 +102,11 @@ public class MessageService {
                                     break;
                                 case SIGN_IN_RESPONSE:
                                     clientState.setCurrentState(ClientState.State.SIGNED_IN);
+                                    break;
+                                case LIST_ACTIVE_USERS_RESPONSE:
+                                    if(clientState.getCurrentState() == ClientState.State.SIGNED_IN) {
+                                        clientState.setActiveUsers(body);
+                                    }
                                     break;
                                 default:
                                     break;

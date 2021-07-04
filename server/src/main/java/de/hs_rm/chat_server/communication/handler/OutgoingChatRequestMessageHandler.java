@@ -6,17 +6,18 @@ import de.hs_rm.chat_server.model.message.Header;
 import de.hs_rm.chat_server.model.message.InvalidHeaderException;
 import de.hs_rm.chat_server.model.message.MessageType;
 
-import java.io.DataOutputStream;
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 
 public class OutgoingChatRequestMessageHandler {
 
     public String handle(Client client) {
         var clientSocket = client.getSocket();
-        DataOutputStream outToClient = null;
+        BufferedWriter outToClient = null;
 
         try {
-            outToClient = new DataOutputStream(clientSocket.getOutputStream());
+            outToClient = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -31,7 +32,8 @@ public class OutgoingChatRequestMessageHandler {
 
         System.out.println("OUTGOING (" + clientSocket.getRemoteSocketAddress().toString() + "):\t" + outgoingRequest);
         try {
-            outToClient.writeBytes(outgoingRequest + "\n");
+            outToClient.write(outgoingRequest + "\n");
+            outToClient.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
