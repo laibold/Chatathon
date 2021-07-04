@@ -18,7 +18,7 @@ public class OutgoingChatRequestResponseMessageHandler extends MessageHandler {
             bodyContent = "Chat request declined";
 
             try {
-                return MessageGenerator.generateMessage(status, MessageType.CHAT_REQUEST_DECLINED, bodyContent);
+                return MessageGenerator.generateMessage(status, MessageType.FINAL_CHAT_REQUEST_RESPONSE, bodyContent);
             } catch (InvalidHeaderException e) {
                 e.printStackTrace();
             }
