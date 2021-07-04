@@ -34,7 +34,7 @@ public class Listener {
 
                     try {
                         inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
-                        outToClient = new BufferedWriter(new OutputStreamWriter(connectionSocket.getOutputStream())); // new DataOutputStream(connectionSocket.getOutputStream());
+                        outToClient = new BufferedWriter(new OutputStreamWriter(connectionSocket.getOutputStream()));
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
