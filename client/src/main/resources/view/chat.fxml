@@ -18,7 +18,7 @@
         <TextArea prefHeight="Infinity" prefWidth="Infinity" style="-fx-background-color: green;"
                   GridPane.columnIndex="1" GridPane.rowIndex="2" fx:id="chatTextArea"/>
         <ListView prefHeight="Infinity" prefWidth="Infinity" style="-fx-background-color: red;" GridPane.rowIndex="1"
-                  GridPane.rowSpan="3"/>
+                  GridPane.rowSpan="3" fx:id="activeUserListView"/>
         <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" prefHeight="Infinity"
                 prefWidth="Infinity" text="refresh" onAction="#refreshUserList"/>
         <Button alignment="CENTER" mnemonicParsing="false" prefHeight="Infinity" prefWidth="Infinity" text="send"
