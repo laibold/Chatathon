@@ -6,7 +6,7 @@ public class FinalChatRequestResponse {
     private boolean accepted;
     private Client client;
 
-    public Boolean isAccepted() {
+    public Boolean getAccepted() {
         return accepted;
     }
 
