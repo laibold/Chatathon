@@ -16,7 +16,7 @@ public class OutgoingChatRequestResponseMessageHandler extends MessageHandler {
             finalChatRequestResponse.setAccepted(false);
         } else {
             finalChatRequestResponse.setAccepted(true);
-            finalChatRequestResponse.setIp(message.getClient().getSocket().getInetAddress());
+            finalChatRequestResponse.setIp(message.getClient().getSocket().getInetAddress().toString());
             finalChatRequestResponse.setPort(message.getClient().getSocket().getPort());
         }
 

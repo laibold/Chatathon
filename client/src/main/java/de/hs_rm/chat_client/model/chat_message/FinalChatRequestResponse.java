@@ -1,6 +1,4 @@
-package de.hs_rm.chat_server.model.message;
-
-import java.net.InetAddress;
+package de.hs_rm.chat_client.model.chat_message;
 
 public class FinalChatRequestResponse {
     private boolean accepted;
