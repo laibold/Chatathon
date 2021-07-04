@@ -3,15 +3,15 @@ package de.hs_rm.chat_server.model.message;
 import de.hs_rm.chat_server.model.client.Client;
 
 public class FinalChatRequestResponse {
-    private Boolean response;
+    private Boolean acceptance;
     private Client client;
 
-    public Boolean getResponse() {
-        return response;
+    public Boolean getAcceptance() {
+        return acceptance;
     }
 
-    public void setResponse(Boolean response) {
-        this.response = response;
+    public void setAcceptance(Boolean acceptance) {
+        this.acceptance = acceptance;
     }
 
     public Client getClient() {

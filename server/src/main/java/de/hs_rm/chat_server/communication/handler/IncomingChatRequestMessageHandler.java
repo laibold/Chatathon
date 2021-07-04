@@ -2,10 +2,7 @@ package de.hs_rm.chat_server.communication.handler;
 
 import de.hs_rm.chat_server.communication.MessageGenerator;
 import de.hs_rm.chat_server.model.client.Client;
-import de.hs_rm.chat_server.model.message.Header;
-import de.hs_rm.chat_server.model.message.InvalidHeaderException;
-import de.hs_rm.chat_server.model.message.Message;
-import de.hs_rm.chat_server.model.message.MessageType;
+import de.hs_rm.chat_server.model.message.*;
 import de.hs_rm.chat_server.service.ClientService;
 import de.hs_rm.chat_server.service.UserService;
 
@@ -16,8 +13,8 @@ public class IncomingChatRequestMessageHandler extends MessageHandler {
 
     @Override
     public String handle(Message message) {
-        var username = gson.fromJson(message.getBody(), String.class);
-        var queriedUser = userService.getUserByName(username);
+        var request = gson.fromJson(message.getBody(), IncomingChatRequest.class);
+        var queriedUser = userService.getUserByName(request.getRecipient());
 
         Header.Status status;
         String bodyContent;
@@ -40,7 +37,7 @@ public class IncomingChatRequestMessageHandler extends MessageHandler {
         try {
             if (status == Header.Status.SUCCESS) {
                 var outgoingChatRequestMessageHandler = new OutgoingChatRequestMessageHandler();
-                outgoingChatRequestMessageHandler.sendOutgoingChatRequestMessage(recipient, username);
+                outgoingChatRequestMessageHandler.sendOutgoingChatRequestMessage(recipient, request.getSender());
             }
             return MessageGenerator.generateMessage(status, MessageType.INCOMING_CHAT_REQUEST_RESPONSE, bodyContent);
         } catch (InvalidHeaderException e) {
