@@ -4,7 +4,7 @@ import java.net.InetAddress;
 
 public class FinalChatRequestResponse {
     private boolean accepted;
-    private InetAddress ip;
+    private String ip;
     private int port;
 
     public boolean isAccepted() {
@@ -15,11 +15,11 @@ public class FinalChatRequestResponse {
         this.accepted = accepted;
     }
 
-    public InetAddress getIp() {
+    public String getIp() {
         return ip;
     }
 
-    public void setIp(InetAddress ip) {
+    public void setIp(String ip) {
         this.ip = ip;
     }
 
