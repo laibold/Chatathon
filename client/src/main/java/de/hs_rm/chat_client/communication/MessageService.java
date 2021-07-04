@@ -110,15 +110,26 @@ public class MessageService {
                                     clientState.setCurrentState(ClientState.State.SIGNED_IN);
                                     break;
                                 case LIST_ACTIVE_USERS_RESPONSE:
-                                    if(clientState.getCurrentState() == ClientState.State.SIGNED_IN) {
+                                    if (clientState.getCurrentState() == ClientState.State.SIGNED_IN) {
                                         clientState.setActiveUsers(body);
                                     }
+                                    break;
+                                case INCOMING_CHAT_REQUEST_RESPONSE:
+                                case FINAL_CHAT_REQUEST_RESPONSE:
+                                    clientState.setFinalChatRequestResponseState(header.getStatus(), header.getMessageType(), body);
                                     break;
                                 default:
                                     break;
                             }
                         } else {
-                            // TODO error handling
+                            // TODO error handling und dann evl beide switches zusammenfassen
+                            switch (header.getMessageType()) {
+                                case INCOMING_CHAT_REQUEST_RESPONSE:
+                                    clientState.setFinalChatRequestResponseState(header.getStatus(), header.getMessageType(), body);
+                                    break;
+                                default:
+                                    break;
+                            }
                         }
                     }
 

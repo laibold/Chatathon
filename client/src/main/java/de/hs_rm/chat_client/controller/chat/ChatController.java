@@ -1,16 +1,16 @@
 package de.hs_rm.chat_client.controller.chat;
 
 import de.hs_rm.chat_client.communication.MessageService;
-import de.hs_rm.chat_client.controller.BaseController;
-import de.hs_rm.chat_client.controller.ClientState;
-import de.hs_rm.chat_client.controller.StateObserver;
-import de.hs_rm.chat_client.controller.UserListObserver;
+import de.hs_rm.chat_client.controller.*;
 import de.hs_rm.chat_client.model.header.InvalidHeaderException;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 
@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.util.List;
 
 
-public class ChatController extends BaseController implements StateObserver, UserListObserver {
+public class ChatController extends BaseController implements StateObserver, UserListObserver, FinalChatRequestResponseObserver {
 
     @FXML
     private TextArea chatTextArea;
@@ -28,10 +28,15 @@ public class ChatController extends BaseController implements StateObserver, Use
 
     private MessageService messageService;
 
+    private final SimpleIntegerProperty finalChatRequestState = new SimpleIntegerProperty(0);
+    private final SimpleStringProperty finalChatRequestMessage = new SimpleStringProperty("");
+
     @FXML
     public void initialize() {
         messageService = MessageService.getInstance();
-        ClientState.getInstance().addUserListObserver(this);
+        var clientState = ClientState.getInstance();
+        clientState.addUserListObserver(this);
+        clientState.setFinalChatRequestResponseObserver(this);
     }
 
     @FXML
@@ -84,28 +89,57 @@ public class ChatController extends BaseController implements StateObserver, Use
                     e.printStackTrace();
                 }
 
-                System.out.println(currentItemSelected + " angefragt");
+                System.out.println("Requested chat with user " + currentItemSelected);
 
-                var alert = new Alert(Alert.AlertType.INFORMATION, "angefragt");
+                var alert = new Alert(Alert.AlertType.INFORMATION, "Requested chat with user " + currentItemSelected);
+                alert.getButtonTypes().clear();
+                alert.setHeaderText("Chat request");
+                alert.setTitle("Chat request");
 
-                new Thread(() -> {
-                    try {
-                        // Wait for 2 secs
-                        // TODO auf Antwort warten
-                        Thread.sleep(2000);
-                        if (alert.isShowing()) {
-                            Platform.runLater(alert::close);
-                        }
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                new Thread(() -> finalChatRequestState.addListener((o, oldVal, newVal) -> {
+                    var state = ChatRequestState.values()[newVal.intValue()];
+                    switch (state) {
+                        case REQUESTED:
+                            try {
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+
+                            Platform.runLater(() ->
+                                alert.setContentText("Server received request for user " + currentItemSelected + ", hold the line.")
+                            );
+                            break;
+                        case REQUEST_ERROR:
+                        case DECLINED:
+                            Platform.runLater(() -> {
+                                alert.setAlertType(Alert.AlertType.ERROR);
+                                alert.setContentText(finalChatRequestMessage.get());
+                                alert.getButtonTypes().add(ButtonType.CLOSE);
+                            });
+                            break;
+                        case ACCEPTED:
+                            Platform.runLater(() -> {
+                                alert.setContentText("User accepted your request. Happy chatting!");
+                                finalChatRequestState.set(ChatRequestState.UNINITIALIZED.ordinal());
+                                alert.getButtonTypes().add(ButtonType.CLOSE);
+                            });
+                            break;
+                        default:
+                            break;
                     }
-                }).start();
+                })).start();
 
                 alert.showAndWait();
-
             }
         });
 
         activeUserListView.setItems(obsList);
+    }
+
+    @Override
+    public void setFinalChatRequestState(ChatRequestState state, String message) {
+        finalChatRequestMessage.set(message);
+        finalChatRequestState.set(state.ordinal());
     }
 }
