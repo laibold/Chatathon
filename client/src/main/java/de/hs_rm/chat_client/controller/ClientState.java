@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import de.hs_rm.chat_client.controller.chat.ChatHandler;
 import de.hs_rm.chat_client.controller.chat.ChatHandler.ChatRequestState;
+import de.hs_rm.chat_client.model.chat_message.FinalChatRequestResponse;
 import de.hs_rm.chat_client.model.message.Header;
 import de.hs_rm.chat_client.model.message.MessageType;
 import javafx.application.Platform;
@@ -94,9 +95,9 @@ public class ClientState {
                 errorMessage = bodyMessage;
             }
         } else if (messageType == MessageType.FINAL_CHAT_REQUEST_RESPONSE) {
-            var bodyValue = gson.fromJson(body, boolean.class);
+            var bodyValue = gson.fromJson(body, FinalChatRequestResponse.class);
 
-            if (bodyValue) {
+            if (bodyValue.isAccepted()) {
                 // start chatting
                 chatRequestState = ChatRequestState.ACCEPTED;
             } else {
