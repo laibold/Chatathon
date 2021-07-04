@@ -9,6 +9,10 @@ public class OutgoingChatRequestResponse {
         this.username = username;
     }
 
+    public OutgoingChatRequestResponse() {
+        
+    }
+
     public Boolean getAcceptance() {
         return acceptance;
     }
