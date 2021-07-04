@@ -14,8 +14,10 @@ public class MessageTypeHandler {
     public MessageTypeHandler() {
         handlers.put(MessageType.SIGN_UP, new SignUpMessageHandler());
         handlers.put(MessageType.SIGN_IN, new SignInMessageHandler());
-        // TODO: handlers.put(MessageType.SIGN_OUT, new SignOutMessageHandler());
+        handlers.put(MessageType.SIGN_OUT, new SignOutMessageHandler());
         handlers.put(MessageType.LIST_ACTIVE_USERS, new ListActiveUsersMessageHandler());
+        handlers.put(MessageType.INCOMING_CHAT_REQUEST, new IncomingChatRequestMessageHandler());
+        handlers.put(MessageType.OUTGOING_CHAT_REQUEST_RESPONSE, new OutgoingChatRequestResponseMessageHandler());
     }
 
     public String handleMessage(Message message) throws InvalidHeaderException {
