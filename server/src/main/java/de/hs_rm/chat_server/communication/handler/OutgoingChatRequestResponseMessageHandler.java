@@ -6,7 +6,6 @@ import de.hs_rm.chat_server.model.message.*;
 public class OutgoingChatRequestResponseMessageHandler extends MessageHandler {
     @Override
     public String handle(Message message) {
-        // TODO: Ich bekomme USERNAME (initiator) und BOOLEAN
 
         var response = gson.fromJson(message.getBody(), OutgoingChatRequestResponse.class);
         var status = Header.Status.SUCCESS;
@@ -17,7 +16,8 @@ public class OutgoingChatRequestResponseMessageHandler extends MessageHandler {
             finalChatRequestResponse.setAccepted(false);
         } else {
             finalChatRequestResponse.setAccepted(true);
-            finalChatRequestResponse.setClient(message.getClient());
+            finalChatRequestResponse.setIp(message.getClient().getSocket().getInetAddress());
+            finalChatRequestResponse.setPort(message.getClient().getSocket().getPort());
         }
 
         try {
