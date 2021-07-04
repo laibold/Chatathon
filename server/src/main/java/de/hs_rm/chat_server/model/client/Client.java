@@ -17,4 +17,12 @@ public class Client {
         this.socket = socket;
     }
 
+    public String getIp() {
+        return socket.getInetAddress().getHostAddress();
+    }
+
+    public int getPort() {
+        return socket.getLocalPort();
+    }
+
 }
