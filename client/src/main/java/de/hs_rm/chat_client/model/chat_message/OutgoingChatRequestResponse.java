@@ -22,7 +22,7 @@ public class OutgoingChatRequestResponse {
         this.username = username;
     }
 
-    public boolean isAccepted() {
+    public boolean getAccepted() {
         return accepted;
     }
 
