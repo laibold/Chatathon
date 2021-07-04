@@ -1,4 +1,4 @@
-package de.hs_rm.chat_client.model.header;
+package de.hs_rm.chat_client.model.message;
 
 public enum MessageType {
     SIGN_UP,

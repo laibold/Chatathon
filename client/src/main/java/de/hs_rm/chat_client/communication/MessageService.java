@@ -1,9 +1,10 @@
 package de.hs_rm.chat_client.communication;
 
 import de.hs_rm.chat_client.controller.ClientState;
-import de.hs_rm.chat_client.model.header.Header;
-import de.hs_rm.chat_client.model.header.InvalidHeaderException;
-import de.hs_rm.chat_client.model.header.MessageType;
+import de.hs_rm.chat_client.model.message.Header;
+import de.hs_rm.chat_client.model.message.InvalidHeaderException;
+import de.hs_rm.chat_client.model.message.MessageType;
+import de.hs_rm.chat_client.model.chat_message.OutgoingChatMessage;
 import de.hs_rm.chat_client.model.user.User;
 import de.hs_rm.chat_client.service.HeaderMapper;
 
@@ -64,6 +65,13 @@ public class MessageService {
         writeMessage(message);
     }
 
+    public void sendChatRequestResponse(String recipientUsername, boolean acceptance) throws InvalidHeaderException, IOException {
+        var response = new OutgoingChatMessage(recipientUsername, acceptance);
+        var message = MessageGenerator.generateMessage(MessageType.OUTGOING_CHAT_REQUEST_RESPONSE, response);
+
+        writeMessage(message);
+    }
+
     private void writeMessage(String messageString) throws IOException {
         writer.write(messageString);
         writer.flush();
@@ -117,6 +125,9 @@ public class MessageService {
                                 case INCOMING_CHAT_REQUEST_RESPONSE:
                                 case FINAL_CHAT_REQUEST_RESPONSE:
                                     clientState.setFinalChatRequestResponseState(header.getStatus(), header.getMessageType(), body);
+                                    break;
+                                case OUTGOING_CHAT_REQUEST:
+                                    clientState.openChatRequest(body);
                                     break;
                                 default:
                                     break;

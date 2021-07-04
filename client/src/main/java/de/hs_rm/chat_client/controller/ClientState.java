@@ -2,9 +2,10 @@ package de.hs_rm.chat_client.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import de.hs_rm.chat_client.controller.ChatHandler.ChatRequestState;
-import de.hs_rm.chat_client.model.header.Header;
-import de.hs_rm.chat_client.model.header.MessageType;
+import de.hs_rm.chat_client.controller.chat.ChatHandler;
+import de.hs_rm.chat_client.controller.chat.ChatHandler.ChatRequestState;
+import de.hs_rm.chat_client.model.message.Header;
+import de.hs_rm.chat_client.model.message.MessageType;
 import javafx.application.Platform;
 
 import java.util.EnumMap;
@@ -21,14 +22,6 @@ public class ClientState {
     private final Gson gson = new Gson();
 
     private State currentState = State.STRANGER;
-
-    public String getCurrentUser() {
-        return currentUser;
-    }
-
-    public void setCurrentUser(String username) {
-        this.currentUser = username;
-    }
 
     public enum State {STRANGER, SIGNED_UP, SIGNED_IN}
 
@@ -53,11 +46,7 @@ public class ClientState {
         stateOberserverMap.put(state, observer);
     }
 
-    public void addUserListObserver(ChatHandler observer) {
-        chatHandler = observer;
-    }
-
-    public void setFinalChatRequestResponseObserver(ChatHandler observer) {
+    public void addChatHandler(ChatHandler observer) {
         chatHandler = observer;
     }
 
@@ -118,6 +107,19 @@ public class ClientState {
         }
 
         chatHandler.setFinalChatRequestState(chatRequestState, errorMessage);
+    }
+
+    public String getCurrentUser() {
+        return currentUser;
+    }
+
+    public void setCurrentUser(String username) {
+        this.currentUser = username;
+    }
+
+    public void openChatRequest(String body) {
+        var username = gson.fromJson(body, String.class);
+        chatHandler.openChatRequest(username);
     }
 
 }

@@ -4,7 +4,7 @@ import de.hs_rm.chat_client.controller.BaseController;
 import de.hs_rm.chat_client.controller.ClientState;
 import de.hs_rm.chat_client.controller.StateObserver;
 import de.hs_rm.chat_client.controller.sign_in.SignInController;
-import de.hs_rm.chat_client.model.header.InvalidHeaderException;
+import de.hs_rm.chat_client.model.message.InvalidHeaderException;
 import de.hs_rm.chat_client.model.user.User;
 import de.hs_rm.chat_client.service.PasswordHasher;
 import de.hs_rm.chat_client.communication.MessageService;

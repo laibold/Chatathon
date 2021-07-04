@@ -2,10 +2,9 @@ package de.hs_rm.chat_client.controller.chat;
 
 import de.hs_rm.chat_client.communication.MessageService;
 import de.hs_rm.chat_client.controller.BaseController;
-import de.hs_rm.chat_client.controller.ChatHandler;
 import de.hs_rm.chat_client.controller.ClientState;
 import de.hs_rm.chat_client.controller.StateObserver;
-import de.hs_rm.chat_client.model.header.InvalidHeaderException;
+import de.hs_rm.chat_client.model.message.InvalidHeaderException;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -19,6 +18,8 @@ import javafx.scene.control.TextArea;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 
 public class ChatController extends BaseController implements StateObserver, ChatHandler {
@@ -38,8 +39,7 @@ public class ChatController extends BaseController implements StateObserver, Cha
     public void initialize() {
         messageService = MessageService.getInstance();
         var clientState = ClientState.getInstance();
-        clientState.addUserListObserver(this);
-        clientState.setFinalChatRequestResponseObserver(this);
+        clientState.addChatHandler(this);
     }
 
     @FXML
@@ -89,15 +89,21 @@ public class ChatController extends BaseController implements StateObserver, Cha
                 try {
                     messageService.sendChatRequest(currentItemSelected);
                 } catch (InvalidHeaderException | IOException e) {
-                    e.printStackTrace();
+                    e.printStackTrace(); // TODO
                 }
 
                 System.out.println("Requested chat with user " + currentItemSelected);
 
-                var alert = new Alert(Alert.AlertType.INFORMATION, "Requested chat with user " + currentItemSelected);
-                alert.getButtonTypes().clear();
-                alert.setHeaderText("Chat request");
-                alert.setTitle("Chat request");
+                AtomicReference<Alert> alert = new AtomicReference<>();
+
+                Platform.runLater(() -> {
+                    alert.set(new Alert(Alert.AlertType.INFORMATION, "Requested chat with user " + currentItemSelected));
+                    alert.get().getButtonTypes().clear();
+                    alert.get().setHeaderText("Chat request");
+                    alert.get().setTitle("Outgoing chat request");
+
+                    alert.get().showAndWait();
+                });
 
                 new Thread(() -> finalChatRequestState.addListener((o, oldVal, newVal) -> {
                     var state = ChatRequestState.values()[newVal.intValue()];
@@ -110,22 +116,22 @@ public class ChatController extends BaseController implements StateObserver, Cha
                             }
 
                             Platform.runLater(() ->
-                                alert.setContentText("Server received request for user " + currentItemSelected + ", hold the line.")
+                                alert.get().setContentText("Server received request for user " + currentItemSelected + ", hold the line.")
                             );
                             break;
                         case REQUEST_ERROR:
                         case DECLINED:
                             Platform.runLater(() -> {
-                                alert.setAlertType(Alert.AlertType.ERROR);
-                                alert.setContentText(finalChatRequestMessage.get());
-                                alert.getButtonTypes().add(ButtonType.CLOSE);
+                                alert.get().setAlertType(Alert.AlertType.ERROR);
+                                alert.get().setContentText(finalChatRequestMessage.get());
+                                alert.get().getButtonTypes().add(ButtonType.CLOSE);
                             });
                             break;
                         case ACCEPTED:
                             Platform.runLater(() -> {
-                                alert.setContentText("User accepted your request. Happy chatting!");
+                                alert.get().setContentText("User accepted your request. Happy chatting!");
                                 finalChatRequestState.set(ChatRequestState.UNINITIALIZED.ordinal());
-                                alert.getButtonTypes().add(ButtonType.CLOSE);
+                                alert.get().getButtonTypes().add(ButtonType.CLOSE);
                             });
                             break;
                         default:
@@ -133,11 +139,47 @@ public class ChatController extends BaseController implements StateObserver, Cha
                     }
                 })).start();
 
-                alert.showAndWait();
             }
         });
 
         activeUserListView.setItems(obsList);
+    }
+
+    @Override
+    public void openChatRequest(String username) {
+        var text = "User " + username + " wants to chat with you. Accept?";
+
+        Platform.runLater(() -> {
+            var alert = new Alert(Alert.AlertType.INFORMATION, text, ButtonType.YES, ButtonType.NO);
+            alert.setHeaderText("Chat request");
+            alert.setTitle("Incoming chat request");
+
+            var acceptance = false;
+
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isEmpty()) {
+                // alert is exited, no button has been pressed.
+                // TODO auf windows testen, ob man beim Fenster schließen hier landet
+                System.out.println("exited");
+                acceptance = false;
+            } else if (result.get() == ButtonType.YES) {
+                //oke button is pressed
+                System.out.println("yes");
+                acceptance = true;
+            } else if (result.get() == ButtonType.NO) {
+                // cancel button is pressed
+                System.out.println("no");
+                acceptance = false;
+            }
+
+            try {
+                messageService.sendChatRequestResponse(username, acceptance);
+            } catch (InvalidHeaderException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace(); // TODO
+            }
+        });
     }
 
     @Override

@@ -2,8 +2,8 @@ package de.hs_rm.chat_client.service;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-import de.hs_rm.chat_client.model.header.Header;
-import de.hs_rm.chat_client.model.header.InvalidHeaderException;
+import de.hs_rm.chat_client.model.message.Header;
+import de.hs_rm.chat_client.model.message.InvalidHeaderException;
 
 public class HeaderMapper {
 
