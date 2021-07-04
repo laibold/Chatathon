@@ -58,6 +58,12 @@ public class MessageService {
         writeMessage(message);
     }
 
+    public void sendChatRequest(String username) throws InvalidHeaderException, IOException {
+        var message = MessageGenerator.generateMessage(MessageType.INCOMING_CHAT_REQUEST, username);
+
+        writeMessage(message);
+    }
+
     private void writeMessage(String messageString) throws IOException {
         writer.write(messageString);
         writer.flush();
