@@ -4,6 +4,7 @@ import de.hs_rm.chat_client.communication.MessageService;
 import de.hs_rm.chat_client.controller.BaseController;
 import de.hs_rm.chat_client.controller.ClientState;
 import de.hs_rm.chat_client.controller.StateObserver;
+import de.hs_rm.chat_client.controller.sign_in.SignInController;
 import de.hs_rm.chat_client.model.message.InvalidHeaderException;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -38,6 +39,7 @@ public class ChatController extends BaseController implements StateObserver, Cha
     private TextArea chatLabel;
 
     private MessageService messageService;
+    private ClientState clientState;
 
     private final SimpleIntegerProperty finalChatRequestState = new SimpleIntegerProperty(0);
     private final SimpleStringProperty finalChatRequestMessage = new SimpleStringProperty("");
@@ -45,7 +47,7 @@ public class ChatController extends BaseController implements StateObserver, Cha
     @FXML
     public void initialize() {
         messageService = MessageService.getInstance();
-        var clientState = ClientState.getInstance();
+        clientState = ClientState.getInstance();
         clientState.addChatHandler(this);
 
         new Thread(() -> {
@@ -104,6 +106,20 @@ public class ChatController extends BaseController implements StateObserver, Cha
         }
     }
 
+    @FXML
+    private void signOut(ActionEvent event) {
+        var username = clientState.getCurrentUser();
+        try {
+            messageService.sendSignOut(username);
+            clientState.setCurrentState(ClientState.State.STRANGER);
+            navigateToNext();
+        } catch (InvalidHeaderException e) {
+            System.out.println("invalid header");
+        } catch (IOException e) {
+            System.out.println("IOException");
+        }
+    }
+
     public void addIncomingChatMessage(String sender, String message) {
         message = message.trim();
         if (!message.isBlank()) {
@@ -127,7 +143,7 @@ public class ChatController extends BaseController implements StateObserver, Cha
 
     @Override
     public void navigateToNext() {
-        // TODO logout
+        navigateTo(new SignInController());
     }
 
     @Override
@@ -141,8 +157,8 @@ public class ChatController extends BaseController implements StateObserver, Cha
 
             if (click.getClickCount() == 2) {
                 var currentItemSelected = activeUserListView
-                    .getSelectionModel()
-                    .getSelectedItem();
+                        .getSelectionModel()
+                        .getSelectedItem();
 
                 try {
                     messageService.sendChatRequest(currentItemSelected);
@@ -174,7 +190,7 @@ public class ChatController extends BaseController implements StateObserver, Cha
                             }
 
                             Platform.runLater(() ->
-                                alert.get().setContentText("Server received request for user " + currentItemSelected + ", hold the line.")
+                                    alert.get().setContentText("Server received request for user " + currentItemSelected + ", hold the line.")
                             );
                             break;
                         case REQUEST_ERROR:

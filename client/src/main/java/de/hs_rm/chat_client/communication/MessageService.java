@@ -14,7 +14,7 @@ import java.net.Socket;
 
 public class MessageService {
 
-    private static final String REMOTE_HOST = "192.168.0.22";
+    private static final String REMOTE_HOST = "localhost";
     private static final int REMOTE_PORT = 8080;
 
     private static MessageService instance;
@@ -70,6 +70,12 @@ public class MessageService {
     public void sendChatRequestResponse(String recipientUsername, boolean accepted) throws InvalidHeaderException, IOException {
         var response = new OutgoingChatRequestResponse(recipientUsername, accepted);
         var message = MessageGenerator.generateMessage(MessageType.OUTGOING_CHAT_REQUEST_RESPONSE, response);
+
+        writeMessage(message);
+    }
+
+    public void sendSignOut(String username) throws InvalidHeaderException, IOException {
+        var message = MessageGenerator.generateMessage(MessageType.SIGN_OUT, username);
 
         writeMessage(message);
     }

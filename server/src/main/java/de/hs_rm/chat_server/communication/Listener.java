@@ -92,9 +92,12 @@ public class Listener {
                     var message = new Message(header, body, client);
 
                     var response = messageTypeHandler.handleMessage(message);
-                    System.out.printf("Sende an Client (%s):\n%s%n\n", connectionSocket.getRemoteSocketAddress(), response);
-                    outToClient.write(response + "\n");
-                    outToClient.flush();
+
+                    if (response != null) {
+                        System.out.printf("Sende an Client (%s):\n%s%n\n", connectionSocket.getRemoteSocketAddress(), response);
+                        outToClient.write(response + "\n");
+                        outToClient.flush();
+                    }
                 } else {
                     connected = false;
                 }
