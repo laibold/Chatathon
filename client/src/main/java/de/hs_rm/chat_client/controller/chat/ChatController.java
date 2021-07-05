@@ -6,42 +6,41 @@ import de.hs_rm.chat_client.controller.ClientState;
 import de.hs_rm.chat_client.controller.StateObserver;
 import de.hs_rm.chat_client.model.message.InvalidHeaderException;
 import javafx.application.Platform;
-import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TextArea;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicReference;
 
 
 public class ChatController extends BaseController implements StateObserver, ChatHandler {
 
     @FXML
+    @SuppressWarnings("unused")
     private TextArea chatTextArea;
 
     @FXML
+    @SuppressWarnings("unused")
     private ListView<String> activeUserListView;
 
     @FXML
-    private Label chatLabel;
+    @SuppressWarnings("unused")
+    private TextArea chatLabel;
 
     private MessageService messageService;
 
     private final SimpleIntegerProperty finalChatRequestState = new SimpleIntegerProperty(0);
     private final SimpleStringProperty finalChatRequestMessage = new SimpleStringProperty("");
-
-    private final ObservableList<String> observableList = FXCollections.observableArrayList(new ArrayList<>());
-    private final ListProperty<String> messageList = new SimpleListProperty<>(observableList);
-
 
     @FXML
     public void initialize() {
@@ -49,10 +48,36 @@ public class ChatController extends BaseController implements StateObserver, Cha
         var clientState = ClientState.getInstance();
         clientState.addChatHandler(this);
 
-        messageList.addListener((o, oldVal, newVal) -> {
-            var messages = String.join("\n", newVal);
-            chatLabel.setText(messages);
-        });
+        new Thread(() -> {
+            var messages = List.of(
+                "Seit 1998 ist Kiko Pangilinan mit Sharon Cuneta verheiratet.",
+                "Im Garten regnet es.",
+                "Janneks diskrete Cousine fällt ihre Pappel.",
+                "Weshalb baut die Luftheizungsbauerin intelligent Heizungen auf der Eröffnung einer Ausstellung auf?",
+                "Der Vermieter hilft krank.",
+                "Es stürmt.",
+                "Wie bereitet sich sie in einer Besprechung vor?",
+                "Per hat eine Wunde am Fuß.",
+                "Deine Freundin erholt sich diskret.",
+                "Der hilflose Tomas isst gerade Pfirsichpizza.",
+                "Claudia schreit im Restaurant.",
+                "Grau ist eine hemmungslose Farbe.",
+                "Wo schwimmt die Hartz-IV-Empfängerin?"
+            );
+            var random = new Random();
+
+            while (true) {
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                var randInt = random.nextInt(messages.size());
+                var message = messages.get(randInt);
+                addIncomingChatMessage("Partner", message);
+            }
+        }).start();
     }
 
     @FXML
@@ -72,11 +97,27 @@ public class ChatController extends BaseController implements StateObserver, Cha
         var text = chatTextArea.getText().trim();
         if (!text.isBlank()) {
             var str = "You: " + text;
-            messageList.add(str);
+            appendChatMessageToTextArea(str);
             chatTextArea.clear();
             chatTextArea.requestFocus();
             System.out.println("Send " + text);
         }
+    }
+
+    public void addIncomingChatMessage(String sender, String message) {
+        message = message.trim();
+        if (!message.isBlank()) {
+            var str = sender + ": " + message;
+            appendChatMessageToTextArea(str);
+            System.out.println("Received from " + sender + ": " + message);
+        }
+    }
+
+    private void appendChatMessageToTextArea(String message) {
+        Platform.runLater(() -> {
+            chatLabel.appendText(message + "\n\n");
+            chatLabel.setScrollTop(Integer.MAX_VALUE);
+        });
     }
 
     @Override
