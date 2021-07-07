@@ -70,6 +70,7 @@ public class MessageService {
     public void sendChatRequestResponse(String recipientUsername, boolean accepted) throws InvalidHeaderException, IOException {
         var response = new OutgoingChatRequestResponse(recipientUsername, accepted);
         var message = MessageGenerator.generateMessage(MessageType.OUTGOING_CHAT_REQUEST_RESPONSE, response);
+        clientState.setCurrentChatPartner(recipientUsername);
 
         writeMessage(message);
     }

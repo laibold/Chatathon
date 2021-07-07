@@ -50,7 +50,9 @@ public class ChatController extends BaseController implements StateObserver, Cha
         clientState = ClientState.getInstance();
         clientState.addChatHandler(this);
 
+        // Test
         new Thread(() -> {
+            clientState.setCurrentChatPartner("Jonasthan");
             var messages = List.of(
                 "Seit 1998 ist Kiko Pangilinan mit Sharon Cuneta verheiratet.",
                 "Im Garten regnet es.",
@@ -77,7 +79,7 @@ public class ChatController extends BaseController implements StateObserver, Cha
 
                 var randInt = random.nextInt(messages.size());
                 var message = messages.get(randInt);
-                addIncomingChatMessage("Partner", message);
+                addIncomingChatMessage(clientState.getCurrentChatPartner(), message);
             }
         }).start();
     }
@@ -118,6 +120,7 @@ public class ChatController extends BaseController implements StateObserver, Cha
         } catch (IOException e) {
             System.out.println("IOException");
         }
+
     }
 
     public void addIncomingChatMessage(String sender, String message) {

@@ -18,10 +18,11 @@ public class ClientState {
 
     private static ClientState instance;
     private final Map<State, StateObserver> stateOberserverMap = new EnumMap<>(State.class);
-    private ChatHandler chatHandler;
-    private String currentUser;
     private final Gson gson = new Gson();
+    private ChatHandler chatHandler;
 
+    private String currentUser;
+    private String currentChatPartner;
     private State currentState = State.STRANGER;
 
     public enum State {STRANGER, SIGNED_UP, SIGNED_IN}
@@ -49,6 +50,22 @@ public class ClientState {
 
     public void addChatHandler(ChatHandler observer) {
         chatHandler = observer;
+    }
+
+    public String getCurrentUser() {
+        return currentUser;
+    }
+
+    public void setCurrentUser(String username) {
+        this.currentUser = username;
+    }
+
+    public String getCurrentChatPartner() {
+        return currentChatPartner;
+    }
+
+    public void setCurrentChatPartner(String currentChatPartner) {
+        this.currentChatPartner = currentChatPartner;
     }
 
     public State getCurrentState() {
@@ -100,6 +117,7 @@ public class ClientState {
             if (bodyValue.isAccepted()) {
                 // start chatting
                 chatRequestState = ChatRequestState.ACCEPTED;
+                setCurrentChatPartner(bodyValue.getUsernameOfPartner());
             } else {
                 // request was declined
                 chatRequestState = ChatRequestState.DECLINED;
@@ -108,14 +126,6 @@ public class ClientState {
         }
 
         chatHandler.setFinalChatRequestState(chatRequestState, errorMessage);
-    }
-
-    public String getCurrentUser() {
-        return currentUser;
-    }
-
-    public void setCurrentUser(String username) {
-        this.currentUser = username;
     }
 
     public void openChatRequest(String body) {

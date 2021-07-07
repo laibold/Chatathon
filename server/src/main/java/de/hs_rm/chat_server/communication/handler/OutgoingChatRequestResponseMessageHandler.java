@@ -23,6 +23,7 @@ public class OutgoingChatRequestResponseMessageHandler extends MessageHandler {
             finalChatRequestResponse.setAccepted(true);
             finalChatRequestResponse.setIp(message.getClient().getIp());
             finalChatRequestResponse.setPort(message.getClient().getPort());
+            finalChatRequestResponse.setUsernameOfPartner(response.getUsername());
         }
 
         var clientService = ClientService.getInstance();
@@ -50,7 +51,6 @@ public class OutgoingChatRequestResponseMessageHandler extends MessageHandler {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
 
         return null;
     }

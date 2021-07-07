@@ -1,11 +1,10 @@
 package de.hs_rm.chat_server.model.message;
 
-import java.net.InetAddress;
-
 public class FinalChatRequestResponse {
     private boolean accepted;
     private String ip;
     private int port;
+    private String usernameOfPartner;
 
     public boolean isAccepted() {
         return accepted;
@@ -29,5 +28,13 @@ public class FinalChatRequestResponse {
 
     public void setPort(int port) {
         this.port = port;
+    }
+
+    public String getUsernameOfPartner() {
+        return usernameOfPartner;
+    }
+
+    public void setUsernameOfPartner(String usernameOfPartner) {
+        this.usernameOfPartner = usernameOfPartner;
     }
 }
