@@ -21,9 +21,11 @@ import java.io.IOException;
 public class SignUpController extends BaseController implements StateObserver {
 
     @FXML
+    @SuppressWarnings("unused")
     private TextField usernameText;
 
     @FXML
+    @SuppressWarnings("unused")
     private PasswordField passwordText;
 
     private ServerMessageService messageService;
@@ -41,6 +43,11 @@ public class SignUpController extends BaseController implements StateObserver {
         } else {
             var username = usernameText.getText().trim();
             var password = PasswordHasher.getHashedPassword(passwordText.getText().trim());
+
+            if (messageService == null) {
+                new Alert(Alert.AlertType.ERROR, "Network failure", ButtonType.CLOSE).showAndWait();
+                return;
+            }
 
             try {
                 messageService.sendSignUpMessage(new User(username, password));
