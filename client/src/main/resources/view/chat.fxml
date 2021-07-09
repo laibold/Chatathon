@@ -14,18 +14,17 @@
         <RowConstraints maxHeight="0.0" minHeight="10.0" percentHeight="80.0" prefHeight="0.0" vgrow="SOMETIMES"/>
         <RowConstraints maxHeight="0.0" minHeight="10.0" percentHeight="30.0" prefHeight="0.0" vgrow="SOMETIMES"/>
     </rowConstraints>
-    <children>
-        <TextArea prefHeight="Infinity" prefWidth="Infinity" style="-fx-background-color: gray;"
-                  GridPane.columnIndex="1" GridPane.rowIndex="2" fx:id="chatTextArea" wrapText="true"/>
-        <ListView prefHeight="Infinity" prefWidth="Infinity" style="fx-background-color: white" GridPane.rowIndex="1"
-                  GridPane.rowSpan="3" fx:id="activeUserListView"/>
-        <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" prefHeight="Infinity"
-                prefWidth="Infinity" text="refresh" onAction="#refreshUserList"/>
-        <Button alignment="CENTER" mnemonicParsing="false" prefHeight="Infinity" prefWidth="Infinity" text="logout"
-                 GridPane.columnIndex="2" onAction="#signOut"/>
-        <Button alignment="CENTER" mnemonicParsing="false" prefHeight="Infinity" prefWidth="Infinity" text="send"
-                GridPane.columnIndex="2" GridPane.rowIndex="2" onAction="#sendChat"/>
-        <TextArea prefHeight="Infinity" prefWidth="Infinity" style="-fx-background-color: white;" GridPane.columnIndex="1"
-               GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" fx:id="chatLabel" editable="false" wrapText="true"/>
-    </children>
+    <TextArea prefHeight="Infinity" prefWidth="Infinity" style="-fx-background-color: gray;"
+              GridPane.columnIndex="1" GridPane.rowIndex="2" fx:id="chatTextArea" wrapText="true"/>
+    <ListView prefHeight="Infinity" prefWidth="Infinity" style="fx-background-color: white" GridPane.rowIndex="1"
+              GridPane.rowSpan="3" fx:id="activeUserListView"/>
+    <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" prefHeight="Infinity"
+            prefWidth="Infinity" text="refresh" onAction="#refreshUserList"/>
+    <Button alignment="CENTER" mnemonicParsing="false" prefHeight="Infinity" prefWidth="Infinity" text="logout"
+            GridPane.columnIndex="2" onAction="#signOut"/>
+    <Button alignment="CENTER" mnemonicParsing="false" prefHeight="Infinity" prefWidth="Infinity" text="send"
+            GridPane.columnIndex="2" GridPane.rowIndex="2" onAction="#sendChat"/>
+    <TextArea prefHeight="Infinity" prefWidth="Infinity" style="-fx-background-color: white;" GridPane.columnIndex="1"
+              GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" fx:id="chatLabel" editable="false"
+              wrapText="true"/>
 </GridPane>

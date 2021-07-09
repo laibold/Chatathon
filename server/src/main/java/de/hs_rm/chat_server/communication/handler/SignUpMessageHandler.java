@@ -13,7 +13,6 @@ import de.hs_rm.chat_server.service.UserService;
 public class SignUpMessageHandler extends MessageHandler {
 
     private final UserService userService = UserService.getInstance();
-    private MessageGenerator messageGenerator;
 
     @Override
     public String handle(Message message) {

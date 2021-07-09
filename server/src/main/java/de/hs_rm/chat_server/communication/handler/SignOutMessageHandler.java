@@ -6,8 +6,8 @@ import de.hs_rm.chat_server.service.UserService;
 
 public class SignOutMessageHandler extends MessageHandler {
 
-    ClientService clientService = ClientService.getInstance();
-    UserService userService = UserService.getInstance();
+    final ClientService clientService = ClientService.getInstance();
+    final UserService userService = UserService.getInstance();
 
     @Override
     public String handle(Message message) {

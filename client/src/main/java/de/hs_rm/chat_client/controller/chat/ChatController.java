@@ -95,10 +95,11 @@ public class ChatController extends BaseController implements StateObserver, Cha
 
     @FXML
     private void signOut(ActionEvent event) {
-        var username = clientState.getCurrentUsername();
         try {
-            serverMessageService.sendSignOut(username);
+            serverMessageService.sendSignOut();
             clientState.setCurrentState(ClientState.State.STRANGER);
+            messageReceiveService.stopListening();
+
             navigateToNext();
         } catch (InvalidHeaderException e) {
             System.err.println("ChatController: Invalid header when sending signOut()");

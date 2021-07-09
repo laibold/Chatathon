@@ -29,7 +29,7 @@ class UserServiceTest {
     }
 
     @Test
-    void throwsExceptionWhenUserAlreadyExists() throws PersistenceException, UserAlreadyExistsException, UserNotFoundException {
+    void throwsExceptionWhenUserAlreadyExists() throws PersistenceException, UserAlreadyExistsException {
         var user = generateRandomUser();
         var userService = UserService.getInstance();
         userService.insertUser(user);
@@ -40,7 +40,7 @@ class UserServiceTest {
     }
 
     @Test
-    void throwsExceptionWhenNotExisting() throws PersistenceException, UserAlreadyExistsException, UserNotFoundException {
+    void throwsExceptionWhenNotExisting() {
         var user = new User(".", ",");
         var userService = UserService.getInstance();
 

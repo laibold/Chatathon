@@ -1,7 +1,6 @@
 package de.hs_rm.chat_server.communication;
 
 import de.hs_rm.chat_server.communication.handler.*;
-import de.hs_rm.chat_server.model.message.InvalidHeaderException;
 import de.hs_rm.chat_server.model.message.Message;
 import de.hs_rm.chat_server.model.message.MessageType;
 

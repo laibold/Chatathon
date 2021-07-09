@@ -2,7 +2,6 @@ package de.hs_rm.chat_server.communication.handler;
 
 import com.google.gson.Gson;
 import de.hs_rm.chat_server.model.message.Message;
-import de.hs_rm.chat_server.model.message.MessageType;
 
 public abstract class MessageHandler {
 

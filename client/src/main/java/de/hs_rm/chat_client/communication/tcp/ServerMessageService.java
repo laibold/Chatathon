@@ -74,8 +74,8 @@ public class ServerMessageService {
         writeMessage(message);
     }
 
-    public void sendSignOut(String username) throws InvalidHeaderException, IOException {
-        var message = ServerMessageGenerator.generateMessage(MessageType.SIGN_OUT, username);
+    public void sendSignOut() throws InvalidHeaderException, IOException {
+        var message = ServerMessageGenerator.generateMessage(MessageType.SIGN_OUT, clientState.getCurrentUsername());
 
         writeMessage(message);
     }

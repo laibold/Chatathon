@@ -1,7 +1,6 @@
 package de.hs_rm.chat_server.service;
 
 import de.hs_rm.chat_server.model.client.Client;
-import de.hs_rm.chat_server.model.user.User;
 
 import java.util.HashMap;
 import java.util.Map;

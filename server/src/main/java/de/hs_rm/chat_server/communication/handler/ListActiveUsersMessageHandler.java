@@ -5,10 +5,7 @@ import de.hs_rm.chat_server.model.message.Header;
 import de.hs_rm.chat_server.model.message.InvalidHeaderException;
 import de.hs_rm.chat_server.model.message.Message;
 import de.hs_rm.chat_server.model.message.MessageType;
-import de.hs_rm.chat_server.model.user.User;
 import de.hs_rm.chat_server.service.ClientService;
-
-import java.util.stream.Collectors;
 
 public class ListActiveUsersMessageHandler extends MessageHandler {
 

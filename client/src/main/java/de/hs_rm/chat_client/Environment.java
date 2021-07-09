@@ -1,6 +1,8 @@
 package de.hs_rm.chat_client;
 
+import de.hs_rm.chat_client.communication.tcp.ServerMessageService;
 import de.hs_rm.chat_client.controller.BaseController;
+import de.hs_rm.chat_client.model.tcp.message.InvalidHeaderException;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -11,13 +13,17 @@ import java.io.IOException;
 
 public class Environment {
     private final Stage stage;
-    //private Service service;
+    private final ServerMessageService serverMessageService;
 
     public Environment(Stage stage) {
         this.stage = stage;
+        this.serverMessageService = ServerMessageService.getInstance();
 
         stage.setOnCloseRequest(windowEvent -> {
-           // service shutdown
+            try {
+                serverMessageService.sendSignOut();
+            } catch (InvalidHeaderException | IOException ignore) {
+            }
         });
     }
 
@@ -44,7 +50,4 @@ public class Environment {
         stage.close();
     }
 
-//    public Service getService() {
-//        return service;
-//    }
 }

@@ -72,8 +72,8 @@ public class UserService {
         User queriedUser = null;
         try {
             queriedUser = database.getUser(name);
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return queriedUser;
     }

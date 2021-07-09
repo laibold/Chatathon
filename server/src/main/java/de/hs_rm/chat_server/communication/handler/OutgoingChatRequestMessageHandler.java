@@ -20,7 +20,7 @@ public class OutgoingChatRequestMessageHandler {
         try {
             outToClient = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
         } catch (IOException e) {
-            e.printStackTrace();
+            e.printStackTrace(); // wichtig TODO, sonst könnte unten ein NullPointer fliegen
         }
 
         String outgoingRequest = null;

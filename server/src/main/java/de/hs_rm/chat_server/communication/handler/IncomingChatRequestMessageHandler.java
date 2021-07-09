@@ -12,8 +12,8 @@ import de.hs_rm.chat_server.service.UserService;
 
 public class IncomingChatRequestMessageHandler extends MessageHandler {
 
-    UserService userService = UserService.getInstance();
-    ClientService clientService = ClientService.getInstance();
+    private final UserService userService = UserService.getInstance();
+    private final ClientService clientService = ClientService.getInstance();
 
     @Override
     public String handle(Message message) {
