@@ -1,11 +1,13 @@
 package de.hs_rm.chat_client.controller.chat;
 
-import de.hs_rm.chat_client.communication.MessageService;
+import de.hs_rm.chat_client.communication.tcp.ServerMessageService;
+import de.hs_rm.chat_client.communication.udp.MessageReceiveService;
+import de.hs_rm.chat_client.communication.udp.MessageSendService;
 import de.hs_rm.chat_client.controller.BaseController;
 import de.hs_rm.chat_client.controller.ClientState;
 import de.hs_rm.chat_client.controller.StateObserver;
 import de.hs_rm.chat_client.controller.sign_in.SignInController;
-import de.hs_rm.chat_client.model.message.InvalidHeaderException;
+import de.hs_rm.chat_client.model.tcp.message.InvalidHeaderException;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -18,13 +20,15 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 import java.util.concurrent.atomic.AtomicReference;
 
 
-public class ChatController extends BaseController implements StateObserver, ChatHandler {
+public class ChatController extends BaseController implements StateObserver, ChatHandler, ChatMessageReceiver {
 
     @FXML
     @SuppressWarnings("unused")
@@ -38,7 +42,9 @@ public class ChatController extends BaseController implements StateObserver, Cha
     @SuppressWarnings("unused")
     private TextArea chatLabel;
 
-    private MessageService messageService;
+    private ServerMessageService serverMessageService;
+    private MessageSendService messageSendService;
+    private MessageReceiveService messageReceiveService;
     private ClientState clientState;
 
     private final SimpleIntegerProperty finalChatRequestState = new SimpleIntegerProperty(0);
@@ -46,53 +52,26 @@ public class ChatController extends BaseController implements StateObserver, Cha
 
     @FXML
     public void initialize() {
-        messageService = MessageService.getInstance();
+        serverMessageService = ServerMessageService.getInstance();
+        messageSendService = new MessageSendService();
+        try {
+            messageReceiveService = new MessageReceiveService();
+        } catch (SocketException e) {
+            e.printStackTrace(); // TODO
+        }
+
         clientState = ClientState.getInstance();
         clientState.addChatHandler(this);
-
-        // Test
-        new Thread(() -> {
-            clientState.setCurrentChatPartner("Jonasthan");
-            var messages = List.of(
-                "Seit 1998 ist Kiko Pangilinan mit Sharon Cuneta verheiratet.",
-                "Im Garten regnet es.",
-                "Janneks diskrete Cousine fällt ihre Pappel.",
-                "Weshalb baut die Luftheizungsbauerin intelligent Heizungen auf der Eröffnung einer Ausstellung auf?",
-                "Der Vermieter hilft krank.",
-                "Es stürmt.",
-                "Wie bereitet sich sie in einer Besprechung vor?",
-                "Per hat eine Wunde am Fuß.",
-                "Deine Freundin erholt sich diskret.",
-                "Der hilflose Tomas isst gerade Pfirsichpizza.",
-                "Claudia schreit im Restaurant.",
-                "Grau ist eine hemmungslose Farbe.",
-                "Wo schwimmt die Hartz-IV-Empfängerin?"
-            );
-            var random = new Random();
-
-            while (true) {
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                var randInt = random.nextInt(messages.size());
-                var message = messages.get(randInt);
-                addIncomingChatMessage(clientState.getCurrentChatPartner(), message);
-            }
-        }).start();
     }
 
     @FXML
     private void refreshUserList(ActionEvent event) {
-        System.out.println("refresh");
         try {
-            messageService.sendActiveUserListRequest();
+            serverMessageService.sendActiveUserListRequest();
         } catch (InvalidHeaderException e) {
-            System.out.println("invalid header");
+            System.err.println("ChatController: Invalid header when sending refreshUserList()");
         } catch (IOException e) {
-            System.out.println("IOException");
+            System.err.println("ChatController: IOException when sending refreshUserList()");
         }
     }
 
@@ -100,25 +79,31 @@ public class ChatController extends BaseController implements StateObserver, Cha
     private void sendChat(ActionEvent event) {
         var text = chatTextArea.getText().trim();
         if (!text.isBlank()) {
-            var str = "You: " + text;
-            appendChatMessageToTextArea(str);
-            chatTextArea.clear();
-            chatTextArea.requestFocus();
-            System.out.println("Send " + text);
+            try {
+                System.out.println("ChatController: Send chat message " + text + "\n");
+                messageSendService.sendMessage(text);
+
+                var str = "You: " + text;
+                appendChatMessageToTextArea(str);
+                chatTextArea.clear();
+                chatTextArea.requestFocus();
+            } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace(); // TODO
+            }
         }
     }
 
     @FXML
     private void signOut(ActionEvent event) {
-        var username = clientState.getCurrentUser();
+        var username = clientState.getCurrentUsername();
         try {
-            messageService.sendSignOut(username);
+            serverMessageService.sendSignOut(username);
             clientState.setCurrentState(ClientState.State.STRANGER);
             navigateToNext();
         } catch (InvalidHeaderException e) {
-            System.out.println("invalid header");
+            System.err.println("ChatController: Invalid header when sending signOut()");
         } catch (IOException e) {
-            System.out.println("IOException");
+            System.err.println("ChatController: IOException when sending signOut()");
         }
 
     }
@@ -128,7 +113,7 @@ public class ChatController extends BaseController implements StateObserver, Cha
         if (!message.isBlank()) {
             var str = sender + ": " + message;
             appendChatMessageToTextArea(str);
-            System.out.println("Received from " + sender + ": " + message);
+            System.out.println("ChatController: Received from " + sender + ": " + message);
         }
     }
 
@@ -151,25 +136,22 @@ public class ChatController extends BaseController implements StateObserver, Cha
 
     @Override
     public void setUserList(List<String> userList) {
-        System.out.println("Users set:");
-        userList.forEach(System.out::println);
-
         var obsList = FXCollections.observableArrayList(userList);
 
         activeUserListView.setOnMouseClicked(click -> {
 
             if (click.getClickCount() == 2) {
                 var currentItemSelected = activeUserListView
-                        .getSelectionModel()
-                        .getSelectedItem();
+                    .getSelectionModel()
+                    .getSelectedItem();
 
                 try {
-                    messageService.sendChatRequest(currentItemSelected);
+                    serverMessageService.sendChatRequest(currentItemSelected, messageReceiveService.getReceivePort());
                 } catch (InvalidHeaderException | IOException e) {
                     e.printStackTrace(); // TODO
                 }
 
-                System.out.println("Requested chat with user " + currentItemSelected);
+                System.out.println("ChatController: Requested chat with user " + currentItemSelected);
 
                 AtomicReference<Alert> alert = new AtomicReference<>();
 
@@ -193,7 +175,7 @@ public class ChatController extends BaseController implements StateObserver, Cha
                             }
 
                             Platform.runLater(() ->
-                                    alert.get().setContentText("Server received request for user " + currentItemSelected + ", hold the line.")
+                                alert.get().setContentText("Server received request for user " + currentItemSelected + ", hold the line.")
                             );
                             break;
                         case REQUEST_ERROR:
@@ -210,6 +192,7 @@ public class ChatController extends BaseController implements StateObserver, Cha
                                 finalChatRequestState.set(ChatRequestState.UNINITIALIZED.ordinal());
                                 alert.get().getButtonTypes().add(ButtonType.CLOSE);
                             });
+                            messageReceiveService.listenForMessages(this);
                             break;
                         default:
                             break;
@@ -223,8 +206,8 @@ public class ChatController extends BaseController implements StateObserver, Cha
     }
 
     @Override
-    public void openChatRequest(String username) {
-        var text = "User " + username + " wants to chat with you. Accept?";
+    public void openChatRequest(String senderUsername, String senderIpAddress, int senderUdpPort) {
+        var text = "User " + senderUsername + " wants to chat with you. Accept?";
 
         Platform.runLater(() -> {
             var alert = new Alert(Alert.AlertType.INFORMATION, text, ButtonType.YES, ButtonType.NO);
@@ -232,25 +215,36 @@ public class ChatController extends BaseController implements StateObserver, Cha
             alert.setTitle("Incoming chat request");
 
             var accepted = false;
+            var receivePort = 0;
 
             Optional<ButtonType> result = alert.showAndWait();
             if (result.isPresent()) {
                 if (result.get() == ButtonType.YES) {
                     //ok button is pressed
-                    System.out.println("yes");
+                    System.out.println("ChatController: accepted chat request");
                     accepted = true;
+                    receivePort = messageReceiveService.getReceivePort();
+
+                    clientState.setCurrentState(ClientState.State.CHATTING);
+                    clientState.setCurrentChatPartner(senderUsername);
+                    try {
+                        clientState.setCurrentChatPartnerAddress(InetAddress.getByName(senderIpAddress));
+                    } catch (UnknownHostException e) {
+                        e.printStackTrace(); // TODO
+                    }
+                    clientState.setCurrentChatPartnerPort(senderUdpPort);
+
+                    messageReceiveService.listenForMessages(this);
                 } else if (result.get() == ButtonType.NO) {
                     // cancel button is pressed
-                    System.out.println("no");
+                    System.out.println("ChatController: declined chat request");
                     accepted = false;
                 }
             }
 
             try {
-                messageService.sendChatRequestResponse(username, accepted);
-            } catch (InvalidHeaderException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
+                serverMessageService.sendChatRequestResponse(clientState.getCurrentUsername(), senderUsername, accepted, receivePort);
+            } catch (InvalidHeaderException | IOException e) {
                 e.printStackTrace(); // TODO
             }
         });

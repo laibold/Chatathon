@@ -1,8 +1,8 @@
 package de.hs_rm.chat_client.service;
 
-import de.hs_rm.chat_client.model.message.Header;
-import de.hs_rm.chat_client.model.message.InvalidHeaderException;
-import de.hs_rm.chat_client.model.message.MessageType;
+import de.hs_rm.chat_client.model.tcp.message.Header;
+import de.hs_rm.chat_client.model.tcp.message.InvalidHeaderException;
+import de.hs_rm.chat_client.model.tcp.message.MessageType;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

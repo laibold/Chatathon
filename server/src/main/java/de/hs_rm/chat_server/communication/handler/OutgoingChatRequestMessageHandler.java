@@ -1,6 +1,7 @@
 package de.hs_rm.chat_server.communication.handler;
 
 import de.hs_rm.chat_server.communication.MessageGenerator;
+import de.hs_rm.chat_server.model.chat_message.OutgoingChatRequest;
 import de.hs_rm.chat_server.model.client.Client;
 import de.hs_rm.chat_server.model.message.Header;
 import de.hs_rm.chat_server.model.message.InvalidHeaderException;
@@ -12,7 +13,7 @@ import java.io.OutputStreamWriter;
 
 public class OutgoingChatRequestMessageHandler {
 
-    public void sendOutgoingChatRequestMessage(Client recipient, String username) {
+    public void sendOutgoingChatRequestMessage(Client recipient, String senderUsername, String senderIpAddress, int senderUdpPort) {
         var clientSocket = recipient.getSocket();
         BufferedWriter outToClient = null;
 
@@ -25,7 +26,8 @@ public class OutgoingChatRequestMessageHandler {
         String outgoingRequest = null;
 
         try {
-            outgoingRequest = MessageGenerator.generateMessage(Header.Status.SUCCESS, MessageType.OUTGOING_CHAT_REQUEST, username);
+            var body = new OutgoingChatRequest(senderUsername, senderIpAddress, senderUdpPort);
+            outgoingRequest = MessageGenerator.generateMessage(Header.Status.SUCCESS, MessageType.OUTGOING_CHAT_REQUEST, body);
         } catch (InvalidHeaderException e) {
             e.printStackTrace();
         }

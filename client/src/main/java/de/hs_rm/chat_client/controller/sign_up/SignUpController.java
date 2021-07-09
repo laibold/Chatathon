@@ -4,10 +4,10 @@ import de.hs_rm.chat_client.controller.BaseController;
 import de.hs_rm.chat_client.controller.ClientState;
 import de.hs_rm.chat_client.controller.StateObserver;
 import de.hs_rm.chat_client.controller.sign_in.SignInController;
-import de.hs_rm.chat_client.model.message.InvalidHeaderException;
-import de.hs_rm.chat_client.model.user.User;
+import de.hs_rm.chat_client.model.tcp.message.InvalidHeaderException;
+import de.hs_rm.chat_client.model.tcp.user.User;
 import de.hs_rm.chat_client.service.PasswordHasher;
-import de.hs_rm.chat_client.communication.MessageService;
+import de.hs_rm.chat_client.communication.tcp.ServerMessageService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -26,11 +26,11 @@ public class SignUpController extends BaseController implements StateObserver {
     @FXML
     private PasswordField passwordText;
 
-    private MessageService messageService;
+    private ServerMessageService messageService;
 
     @FXML
     public void initialize() {
-        messageService = MessageService.getInstance();
+        messageService = ServerMessageService.getInstance();
         ClientState.getInstance().addStateObserver(this, ClientState.State.SIGNED_UP);
     }
 

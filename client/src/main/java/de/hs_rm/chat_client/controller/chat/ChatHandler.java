@@ -10,5 +10,5 @@ public interface ChatHandler {
 
     void setUserList(List<String> userList);
 
-    void openChatRequest(String username);
+    void openChatRequest(String senderUsername, String senderIpAddress, int senderUdpPort);
 }

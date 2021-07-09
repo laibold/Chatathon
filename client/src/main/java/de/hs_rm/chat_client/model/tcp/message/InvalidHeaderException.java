@@ -1,4 +1,4 @@
-package de.hs_rm.chat_client.model.message;
+package de.hs_rm.chat_client.model.tcp.message;
 
 public class InvalidHeaderException extends Exception{
 

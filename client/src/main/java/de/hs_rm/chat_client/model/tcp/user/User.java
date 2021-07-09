@@ -1,4 +1,4 @@
-package de.hs_rm.chat_client.model.user;
+package de.hs_rm.chat_client.model.tcp.user;
 
 public class User {
 

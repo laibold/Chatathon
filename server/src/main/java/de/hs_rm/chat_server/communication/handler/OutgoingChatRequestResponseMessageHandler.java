@@ -1,7 +1,12 @@
 package de.hs_rm.chat_server.communication.handler;
 
 import de.hs_rm.chat_server.communication.MessageGenerator;
-import de.hs_rm.chat_server.model.message.*;
+import de.hs_rm.chat_server.model.chat_message.FinalChatRequestResponse;
+import de.hs_rm.chat_server.model.chat_message.OutgoingChatRequestResponse;
+import de.hs_rm.chat_server.model.message.Header;
+import de.hs_rm.chat_server.model.message.InvalidHeaderException;
+import de.hs_rm.chat_server.model.message.Message;
+import de.hs_rm.chat_server.model.message.MessageType;
 import de.hs_rm.chat_server.service.ClientService;
 
 import java.io.BufferedWriter;
@@ -21,13 +26,13 @@ public class OutgoingChatRequestResponseMessageHandler extends MessageHandler {
             finalChatRequestResponse.setAccepted(false);
         } else {
             finalChatRequestResponse.setAccepted(true);
-            finalChatRequestResponse.setIp(message.getClient().getIp());
-            finalChatRequestResponse.setPort(message.getClient().getPort());
-            finalChatRequestResponse.setUsernameOfPartner(response.getUsername());
+            finalChatRequestResponse.setIpAddress(message.getClient().getIp());
+            finalChatRequestResponse.setUdpPort(response.getReceiveUdpPort());
+            finalChatRequestResponse.setUsernameOfPartner(response.getRespondingUsername());
         }
 
         var clientService = ClientService.getInstance();
-        var clientSocket = clientService.getClient(response.getUsername()).getSocket();
+        var clientSocket = clientService.getClient(response.getRequestedUsername()).getSocket();
         BufferedWriter outToClient = null;
 
         try {

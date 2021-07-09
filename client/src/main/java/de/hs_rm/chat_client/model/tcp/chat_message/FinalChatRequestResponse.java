@@ -1,9 +1,9 @@
-package de.hs_rm.chat_client.model.chat_message;
+package de.hs_rm.chat_client.model.tcp.chat_message;
 
 public class FinalChatRequestResponse {
     private boolean accepted;
-    private String ip;
-    private int port;
+    private String ipAddress;
+    private int udpPort;
     private String usernameOfPartner;
 
     public boolean isAccepted() {
@@ -14,20 +14,20 @@ public class FinalChatRequestResponse {
         this.accepted = accepted;
     }
 
-    public String getIp() {
-        return ip;
+    public String getIpAddress() {
+        return ipAddress;
     }
 
-    public void setIp(String ip) {
-        this.ip = ip;
+    public void setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
     }
 
-    public int getPort() {
-        return port;
+    public int getUdpPort() {
+        return udpPort;
     }
 
-    public void setPort(int port) {
-        this.port = port;
+    public void setUdpPort(int udpPort) {
+        this.udpPort = udpPort;
     }
 
     public String getUsernameOfPartner() {

@@ -1,87 +1,87 @@
-package de.hs_rm.chat_client.communication;
+package de.hs_rm.chat_client.communication.tcp;
 
 import de.hs_rm.chat_client.controller.ClientState;
-import de.hs_rm.chat_client.model.chat_message.IncomingChatRequest;
-import de.hs_rm.chat_client.model.chat_message.OutgoingChatRequestResponse;
-import de.hs_rm.chat_client.model.message.Header;
-import de.hs_rm.chat_client.model.message.InvalidHeaderException;
-import de.hs_rm.chat_client.model.message.MessageType;
-import de.hs_rm.chat_client.model.user.User;
+import de.hs_rm.chat_client.model.tcp.chat_message.IncomingChatRequest;
+import de.hs_rm.chat_client.model.tcp.chat_message.OutgoingChatRequestResponse;
+import de.hs_rm.chat_client.model.tcp.message.Header;
+import de.hs_rm.chat_client.model.tcp.message.InvalidHeaderException;
+import de.hs_rm.chat_client.model.tcp.message.MessageType;
+import de.hs_rm.chat_client.model.tcp.user.User;
 import de.hs_rm.chat_client.service.HeaderMapper;
 
 import java.io.*;
 import java.net.Socket;
 
-public class MessageService {
+public class ServerMessageService {
 
     private static final String REMOTE_HOST = "localhost";
     private static final int REMOTE_PORT = 8080;
 
-    private static MessageService instance;
+    private static ServerMessageService instance;
 
     private final Socket socket;
     private final BufferedWriter writer;
     private final ClientState clientState;
 
-    private MessageService() throws IOException {
+    private ServerMessageService() throws IOException {
         socket = new Socket(REMOTE_HOST, REMOTE_PORT);
         writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
         clientState = ClientState.getInstance();
         listen();
     }
 
-    public static synchronized MessageService getInstance() {
-        if (MessageService.instance == null) {
+    public static synchronized ServerMessageService getInstance() {
+        if (ServerMessageService.instance == null) {
             try {
-                MessageService.instance = new MessageService();
+                ServerMessageService.instance = new ServerMessageService();
             } catch (IOException e) {
                 System.err.println("Could not create socket: " + e.getMessage());
             }
         }
 
-        return MessageService.instance;
+        return ServerMessageService.instance;
     }
 
     public void sendSignUpMessage(User user) throws InvalidHeaderException, IOException {
-        var message = MessageGenerator.generateMessage(MessageType.SIGN_UP, user);
+        var message = ServerMessageGenerator.generateMessage(MessageType.SIGN_UP, user);
 
         writeMessage(message);
     }
 
     public void sendSignInMessage(User user) throws InvalidHeaderException, IOException {
-        var message = MessageGenerator.generateMessage(MessageType.SIGN_IN, user);
+        var message = ServerMessageGenerator.generateMessage(MessageType.SIGN_IN, user);
 
         writeMessage(message);
     }
 
     public void sendActiveUserListRequest() throws InvalidHeaderException, IOException {
-        var message = MessageGenerator.generateMessage(MessageType.LIST_ACTIVE_USERS, "");
+        var message = ServerMessageGenerator.generateMessage(MessageType.LIST_ACTIVE_USERS, "");
 
         writeMessage(message);
     }
 
-    public void sendChatRequest(String recipient) throws InvalidHeaderException, IOException {
-        var incomingChatRequest = new IncomingChatRequest(clientState.getCurrentUser(), recipient);
-        var message = MessageGenerator.generateMessage(MessageType.INCOMING_CHAT_REQUEST, incomingChatRequest);
+    public void sendChatRequest(String recipient, int udpReceivePort) throws InvalidHeaderException, IOException {
+        var incomingChatRequest = new IncomingChatRequest(clientState.getCurrentUsername(), recipient, udpReceivePort);
+        var message = ServerMessageGenerator.generateMessage(MessageType.INCOMING_CHAT_REQUEST, incomingChatRequest);
 
         writeMessage(message);
     }
 
-    public void sendChatRequestResponse(String recipientUsername, boolean accepted) throws InvalidHeaderException, IOException {
-        var response = new OutgoingChatRequestResponse(recipientUsername, accepted);
-        var message = MessageGenerator.generateMessage(MessageType.OUTGOING_CHAT_REQUEST_RESPONSE, response);
-        clientState.setCurrentChatPartner(recipientUsername);
+    public void sendChatRequestResponse(String respondingUsername, String requestedUsername, boolean accepted, int receiveUdpPort) throws InvalidHeaderException, IOException {
+        var response = new OutgoingChatRequestResponse(respondingUsername, requestedUsername, accepted, receiveUdpPort);
+        var message = ServerMessageGenerator.generateMessage(MessageType.OUTGOING_CHAT_REQUEST_RESPONSE, response);
 
         writeMessage(message);
     }
 
     public void sendSignOut(String username) throws InvalidHeaderException, IOException {
-        var message = MessageGenerator.generateMessage(MessageType.SIGN_OUT, username);
+        var message = ServerMessageGenerator.generateMessage(MessageType.SIGN_OUT, username);
 
         writeMessage(message);
     }
 
     private void writeMessage(String messageString) throws IOException {
+        System.out.println("Sending message to Server:\n" + messageString + "\n");
         writer.write(messageString);
         writer.flush();
     }
@@ -114,7 +114,7 @@ public class MessageService {
                             body = null;
                         }
 
-                        System.out.println("Empfangen:");
+                        System.out.println("Received Message from Server:");
                         System.out.println(header);
                         System.out.println(body + "\n");
 

@@ -4,16 +4,20 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import de.hs_rm.chat_client.controller.chat.ChatHandler;
 import de.hs_rm.chat_client.controller.chat.ChatHandler.ChatRequestState;
-import de.hs_rm.chat_client.model.chat_message.FinalChatRequestResponse;
-import de.hs_rm.chat_client.model.message.Header;
-import de.hs_rm.chat_client.model.message.MessageType;
+import de.hs_rm.chat_client.model.tcp.chat_message.FinalChatRequestResponse;
+import de.hs_rm.chat_client.model.tcp.chat_message.OutgoingChatRequest;
+import de.hs_rm.chat_client.model.tcp.message.Header;
+import de.hs_rm.chat_client.model.tcp.message.MessageType;
 import javafx.application.Platform;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+// TODO das ganze fromJson sollte eigentlich hier nicht behandelt werden, eher eine Schicht darüber und hier nur durchreichen
 public class ClientState {
 
     private static ClientState instance;
@@ -21,11 +25,13 @@ public class ClientState {
     private final Gson gson = new Gson();
     private ChatHandler chatHandler;
 
-    private String currentUser;
+    private String currentUsername;
     private String currentChatPartner;
+    private InetAddress currentChatPartnerAddress;
+    private int currentChatPartnerPort;
     private State currentState = State.STRANGER;
 
-    public enum State {STRANGER, SIGNED_UP, SIGNED_IN}
+    public enum State {STRANGER, SIGNED_UP, SIGNED_IN, CHATTING}
 
     private ClientState() {
     }
@@ -52,12 +58,12 @@ public class ClientState {
         chatHandler = observer;
     }
 
-    public String getCurrentUser() {
-        return currentUser;
+    public String getCurrentUsername() {
+        return currentUsername;
     }
 
-    public void setCurrentUser(String username) {
-        this.currentUser = username;
+    public void setCurrentUsername(String username) {
+        this.currentUsername = username;
     }
 
     public String getCurrentChatPartner() {
@@ -81,12 +87,28 @@ public class ClientState {
         }
     }
 
+    public InetAddress getCurrentChatPartnerAddress() {
+        return currentChatPartnerAddress;
+    }
+
+    public void setCurrentChatPartnerAddress(InetAddress currentChatPartnerAddress) {
+        this.currentChatPartnerAddress = currentChatPartnerAddress;
+    }
+
+    public int getCurrentChatPartnerPort() {
+        return currentChatPartnerPort;
+    }
+
+    public void setCurrentChatPartnerPort(int currentChatPartnerPort) {
+        this.currentChatPartnerPort = currentChatPartnerPort;
+    }
+
     public void setActiveUsers(String body) {
         var listType = new TypeToken<List<String>>() {
         }.getType();
         List<String> userList = gson.fromJson(body, listType);
         userList = userList.stream()
-            .filter(user -> !user.equals(currentUser))
+            .filter(user -> !user.equals(currentUsername))
             .collect(Collectors.toList());
 
         chatHandler.setUserList(userList);
@@ -118,6 +140,16 @@ public class ClientState {
                 // start chatting
                 chatRequestState = ChatRequestState.ACCEPTED;
                 setCurrentChatPartner(bodyValue.getUsernameOfPartner());
+
+                try {
+                    setCurrentChatPartnerAddress(InetAddress.getByName(bodyValue.getIpAddress()));
+                } catch (UnknownHostException e) {
+                    e.printStackTrace(); // TODO
+                }
+                setCurrentChatPartnerPort(bodyValue.getUdpPort());
+
+                setCurrentState(State.CHATTING);
+                // Listener will be informed now
             } else {
                 // request was declined
                 chatRequestState = ChatRequestState.DECLINED;
@@ -129,8 +161,8 @@ public class ClientState {
     }
 
     public void openChatRequest(String body) {
-        var username = gson.fromJson(body, String.class);
-        chatHandler.openChatRequest(username);
+        var request = gson.fromJson(body, OutgoingChatRequest.class);
+        chatHandler.openChatRequest(request.getSender(), request.getSenderIpAddress(), request.getSenderUdpPort());
     }
 
 }

@@ -1,4 +1,4 @@
-package de.hs_rm.chat_client.model.client;
+package de.hs_rm.chat_client.model.tcp.client;
 
 import java.net.Socket;
 

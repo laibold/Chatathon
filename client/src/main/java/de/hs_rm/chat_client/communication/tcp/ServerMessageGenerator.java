@@ -1,14 +1,14 @@
-package de.hs_rm.chat_client.communication;
+package de.hs_rm.chat_client.communication.tcp;
 
 import com.google.gson.Gson;
-import de.hs_rm.chat_client.model.message.Header;
-import de.hs_rm.chat_client.model.message.InvalidHeaderException;
-import de.hs_rm.chat_client.model.message.MessageType;
+import de.hs_rm.chat_client.model.tcp.message.Header;
+import de.hs_rm.chat_client.model.tcp.message.InvalidHeaderException;
+import de.hs_rm.chat_client.model.tcp.message.MessageType;
 import de.hs_rm.chat_client.service.HeaderMapper;
 
-public class MessageGenerator {
+public class ServerMessageGenerator {
 
-    private MessageGenerator() {
+    private ServerMessageGenerator() {
     }
 
     private static final Gson gson = new Gson();
