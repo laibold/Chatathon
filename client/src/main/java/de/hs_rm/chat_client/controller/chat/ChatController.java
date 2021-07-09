@@ -140,7 +140,6 @@ public class ChatController extends BaseController implements StateObserver, Cha
         var obsList = FXCollections.observableArrayList(userList);
 
         activeUserListView.setOnMouseClicked(click -> {
-
             if (click.getClickCount() == 2) {
                 var currentItemSelected = activeUserListView
                     .getSelectionModel()
@@ -199,11 +198,13 @@ public class ChatController extends BaseController implements StateObserver, Cha
                             break;
                     }
                 })).start();
-
             }
         });
 
-        activeUserListView.setItems(obsList);
+        Platform.runLater(() -> {
+            activeUserListView.getItems().clear();
+            activeUserListView.setItems(obsList);
+        });
     }
 
     @Override
