@@ -1,5 +1,6 @@
 package de.hs_rm.chat_client.communication.tcp;
 
+import de.hs_rm.chat_client.config.Config;
 import de.hs_rm.chat_client.controller.ClientState;
 import de.hs_rm.chat_client.model.tcp.chat_message.IncomingChatRequest;
 import de.hs_rm.chat_client.model.tcp.chat_message.OutgoingChatRequestResponse;
@@ -14,8 +15,8 @@ import java.net.Socket;
 
 public class ServerMessageService {
 
-    private static final String REMOTE_HOST = "localhost";
-    private static final int REMOTE_PORT = 8080;
+    private static final String REMOTE_HOST = Config.SERVER_IP_ADDRESS;
+    private static final int REMOTE_PORT = Config.SERVER_PORT;
 
     private static ServerMessageService instance;
 
