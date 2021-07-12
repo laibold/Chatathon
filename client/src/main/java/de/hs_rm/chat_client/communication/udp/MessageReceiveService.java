@@ -57,7 +57,15 @@ public class MessageReceiveService {
                         e.printStackTrace(); // TODO
                     }
 
-                    // Unserialize to a MessagePacket object
+                    var packetAddress = receivedPacket.getAddress().getHostAddress();
+                    var currentPartnerAddress = clientState.getCurrentChatPartnerAddress().getHostAddress();
+                    if (!packetAddress.equals(currentPartnerAddress) &&
+                            receivedPacket.getPort() != clientState.getCurrentChatPartnerPort()) {
+                        System.out.println("Received packet from non expected sender, discard.");
+                        continue;
+                    }
+
+                    // Deserialize to a MessagePacket object
                     UdpMessagePacket packet = null;
                     try {
                         packet = (UdpMessagePacket) Serializer.toObject(receivedPacket.getData());
@@ -110,15 +118,14 @@ public class MessageReceiveService {
 
                 var outputStream = new ByteArrayOutputStream();
 
-                receivedPackets.stream()
-                    .map(UdpMessagePacket::getData)
-                    .forEach(p -> {
-                        try {
-                            outputStream.write(p);
-                        } catch (IOException e) {
-                            System.err.println("Error reading received bytes: " + e.getMessage());
-                        }
-                    });
+                receivedPackets.stream().map(UdpMessagePacket::getData).forEach(p -> {
+                    try {
+                        outputStream.write(p);
+                    } catch (IOException e) {
+                        System.err.println("Error reading received bytes: " + e.getMessage());
+                    }
+                });
+
                 var message = outputStream.toString();
                 System.out.println(message);
 

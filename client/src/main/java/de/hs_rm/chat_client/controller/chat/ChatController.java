@@ -9,7 +9,9 @@ import de.hs_rm.chat_client.controller.StateObserver;
 import de.hs_rm.chat_client.controller.sign_in.SignInController;
 import de.hs_rm.chat_client.model.tcp.message.InvalidHeaderException;
 import javafx.application.Platform;
+import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -23,12 +25,13 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
 
-public class ChatController extends BaseController implements StateObserver, ChatHandler, ChatMessageReceiver {
+public class ChatController extends BaseController implements StateObserver, ChatHandler, ChatMessageReceiver, ChatErrorHandler {
 
     @FXML
     @SuppressWarnings("unused")
@@ -50,10 +53,13 @@ public class ChatController extends BaseController implements StateObserver, Cha
     private final SimpleIntegerProperty finalChatRequestState = new SimpleIntegerProperty(0);
     private final SimpleStringProperty finalChatRequestMessage = new SimpleStringProperty("");
 
+    private final ListProperty<String> messageList = new SimpleListProperty<>(FXCollections.observableArrayList(new ArrayList<>()));
+
     @FXML
     public void initialize() {
         serverMessageService = ServerMessageService.getInstance();
-        messageSendService = new MessageSendService();
+        messageSendService = new MessageSendService(this);
+
         try {
             messageReceiveService = new MessageReceiveService();
         } catch (SocketException e) {
@@ -62,6 +68,12 @@ public class ChatController extends BaseController implements StateObserver, Cha
 
         clientState = ClientState.getInstance();
         clientState.addChatHandler(this);
+
+        messageList.addListener((o, oldVal, newVal) -> {
+            var messages = String.join("\n\n", newVal);
+            chatLabel.setText(messages);
+            chatLabel.setScrollTop(Integer.MAX_VALUE);
+        });
     }
 
     @FXML
@@ -79,17 +91,13 @@ public class ChatController extends BaseController implements StateObserver, Cha
     private void sendChat(ActionEvent event) {
         var text = chatTextArea.getText().trim();
         if (!text.isBlank()) {
-            try {
-                System.out.println("ChatController: Send chat message " + text + "\n");
-                messageSendService.sendMessage(text);
+            System.out.println("ChatController: Send chat message " + text + "\n");
+            messageSendService.sendMessage(text);
 
-                var str = "You: " + text;
-                appendChatMessageToTextArea(str);
-                chatTextArea.clear();
-                chatTextArea.requestFocus();
-            } catch (IOException | ClassNotFoundException e) {
-                e.printStackTrace(); // TODO
-            }
+            var str = "You: " + text;
+            messageList.add(str);
+            chatTextArea.clear();
+            chatTextArea.requestFocus();
         }
     }
 
@@ -113,16 +121,9 @@ public class ChatController extends BaseController implements StateObserver, Cha
         message = message.trim();
         if (!message.isBlank()) {
             var str = sender + ": " + message;
-            appendChatMessageToTextArea(str);
+            messageList.add(str);
             System.out.println("ChatController: Received from " + sender + ": " + message);
         }
-    }
-
-    private void appendChatMessageToTextArea(String message) {
-        Platform.runLater(() -> {
-            chatLabel.appendText(message + "\n\n");
-            chatLabel.setScrollTop(Integer.MAX_VALUE);
-        });
     }
 
     @Override
@@ -142,8 +143,8 @@ public class ChatController extends BaseController implements StateObserver, Cha
         activeUserListView.setOnMouseClicked(click -> {
             if (click.getClickCount() == 2) {
                 var currentItemSelected = activeUserListView
-                    .getSelectionModel()
-                    .getSelectedItem();
+                        .getSelectionModel()
+                        .getSelectedItem();
 
                 try {
                     serverMessageService.sendChatRequest(currentItemSelected, messageReceiveService.getReceivePort());
@@ -175,7 +176,7 @@ public class ChatController extends BaseController implements StateObserver, Cha
                             }
 
                             Platform.runLater(() ->
-                                alert.get().setContentText("Server received request for user " + currentItemSelected + ", hold the line.")
+                                    alert.get().setContentText("Server received request for user " + currentItemSelected + ", hold the line.")
                             );
                             break;
                         case REQUEST_ERROR:
@@ -256,5 +257,17 @@ public class ChatController extends BaseController implements StateObserver, Cha
     public void setFinalChatRequestState(ChatRequestState state, String message) {
         finalChatRequestMessage.set(message);
         finalChatRequestState.set(state.ordinal());
+    }
+
+    @Override
+    public void notifyAboutSendingError(String message) {
+        if (!messageList.isEmpty()) {
+            var lastMessageIndex = messageList.size() - 1;
+            var lastMessage = messageList.get().get(lastMessageIndex);
+            messageList.remove(lastMessageIndex);
+            chatTextArea.setText(lastMessage);
+        }
+
+        Platform.runLater(() -> new Alert(Alert.AlertType.ERROR, message, ButtonType.CLOSE).showAndWait());
     }
 }
