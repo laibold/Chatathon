@@ -49,7 +49,7 @@ public class SignInController extends BaseController implements StateObserver {
             var password = PasswordHasher.getHashedPassword(passwordText.getText().trim());
 
             if (messageService == null) {
-                new Alert(Alert.AlertType.ERROR, "Network failure", ButtonType.CLOSE).showAndWait();
+                Platform.runLater(() -> new Alert(Alert.AlertType.ERROR, "Network failure", ButtonType.CLOSE).showAndWait());
                 return;
             }
 
@@ -57,9 +57,9 @@ public class SignInController extends BaseController implements StateObserver {
                 messageService.sendSignInMessage(new User(username, password));
                 clientState.setCurrentUsername(username);
             } catch (InvalidHeaderException e) {
-                new Alert(Alert.AlertType.ERROR, "Internal failure", ButtonType.CLOSE).showAndWait();
+                Platform.runLater(() -> new Alert(Alert.AlertType.ERROR, "Internal failure", ButtonType.CLOSE).showAndWait());
             } catch (IOException e) {
-                new Alert(Alert.AlertType.ERROR, "Network failure", ButtonType.CLOSE).showAndWait();
+                Platform.runLater(() -> new Alert(Alert.AlertType.ERROR, "Network failure", ButtonType.CLOSE).showAndWait());
             }
         }
     }
