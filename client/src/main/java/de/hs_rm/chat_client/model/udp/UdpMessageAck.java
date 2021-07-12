@@ -6,9 +6,9 @@ public class UdpMessageAck implements Serializable {
 
     private int seqNumber;
 
-    public UdpMessageAck(int packet) {
+    public UdpMessageAck(int seqNumber) {
         super();
-        this.seqNumber = packet;
+        this.seqNumber = seqNumber;
     }
 
     public int getSeqNumber() {

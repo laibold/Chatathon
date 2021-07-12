@@ -35,7 +35,7 @@ public class MessageSendService {
     public void sendMessage(String message) throws IOException, ClassNotFoundException {
         this.receiverAddress = clientState.getCurrentChatPartnerAddress();
         this.receiverPort = clientState.getCurrentChatPartnerPort();
-        sendSocket = new DatagramSocket();
+        sendSocket = new DatagramSocket(); // TODO in den Konstruktor packen
 
         lastSentSeq = 0;
 
@@ -62,7 +62,7 @@ public class MessageSendService {
 
                 // Copy segment of data bytes to array
                 var fromByte = lastSentSeq * MAXIMUM_SEGMENT_SIZE;
-                var untilByte = lastSentSeq * MAXIMUM_SEGMENT_SIZE + MAXIMUM_SEGMENT_SIZE;
+                var untilByte = fromByte + MAXIMUM_SEGMENT_SIZE;
                 bytesToSend = Arrays.copyOfRange(messageBytes, fromByte, untilByte);
 
                 // Create MessagePacket
@@ -96,6 +96,7 @@ public class MessageSendService {
                     break;
                 }
 
+                // set lastAckedSeq to ack's seqNumber if it's higher than current value
                 lastAckedSeq = Math.max(lastAckedSeq, ackObject.getSeqNumber());
             } catch (SocketTimeoutException e) {
                 // then send all the sent but non-acked packets

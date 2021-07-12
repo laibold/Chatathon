@@ -22,18 +22,16 @@ public class MessageReceiveService {
     private final ClientState clientState;
     private final DatagramSocket receiveSocket;
     private boolean receiveMessages;
-    private final int receivePort;
 
     public MessageReceiveService() throws SocketException {
         this.clientState = ClientState.getInstance();
 
         receiveSocket = new DatagramSocket();
-        receivePort = receiveSocket.getLocalPort();
-        System.out.println("Started MessageReceiveService with port " + receivePort + "\n");
+        System.out.println("Started MessageReceiveService with port " + getReceivePort() + "\n");
     }
 
     public int getReceivePort() {
-        return receivePort;
+        return receiveSocket.getLocalPort();
     }
 
     public void listenForMessages(ChatMessageReceiver receiver) {
@@ -85,13 +83,14 @@ public class MessageReceiveService {
 
                     // Create an MessageAck
                     var ack = new UdpMessageAck(seqWaitingFor);
-                    byte[] ackBytes = new byte[0];
+                    byte[] ackBytes = null;
                     try {
                         ackBytes = Serializer.toBytes(ack);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
 
+                    assert ackBytes != null;
                     var ackPacket = new DatagramPacket(ackBytes, ackBytes.length, receivedPacket.getAddress(), receivedPacket.getPort());
 
                     if (Math.random() > ERROR_RATE) {

@@ -6,9 +6,7 @@ import java.util.Arrays;
 public class UdpMessagePacket implements Serializable {
 
     public int seq;
-
     public byte[] data;
-
     public boolean last;
 
     public UdpMessagePacket(int seq, byte[] data, boolean last) {
