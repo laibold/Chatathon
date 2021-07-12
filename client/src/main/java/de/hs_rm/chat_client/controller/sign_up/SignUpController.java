@@ -1,5 +1,6 @@
 package de.hs_rm.chat_client.controller.sign_up;
 
+import de.hs_rm.chat_client.communication.tcp.ServerMessageService;
 import de.hs_rm.chat_client.controller.BaseController;
 import de.hs_rm.chat_client.controller.ClientState;
 import de.hs_rm.chat_client.controller.StateObserver;
@@ -7,7 +8,7 @@ import de.hs_rm.chat_client.controller.sign_in.SignInController;
 import de.hs_rm.chat_client.model.tcp.message.InvalidHeaderException;
 import de.hs_rm.chat_client.model.tcp.user.User;
 import de.hs_rm.chat_client.service.PasswordHasher;
-import de.hs_rm.chat_client.communication.tcp.ServerMessageService;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -39,22 +40,22 @@ public class SignUpController extends BaseController implements StateObserver {
     @FXML
     private void signUp(ActionEvent event) {
         if (usernameText.getText().isBlank() || passwordText.getText().isBlank()) {
-            new Alert(Alert.AlertType.NONE, "Invalid input", ButtonType.CLOSE).showAndWait();
+            Platform.runLater(() -> new Alert(Alert.AlertType.NONE, "Invalid input", ButtonType.CLOSE).showAndWait());
         } else {
             var username = usernameText.getText().trim();
             var password = PasswordHasher.getHashedPassword(passwordText.getText().trim());
 
             if (messageService == null) {
-                new Alert(Alert.AlertType.ERROR, "Network failure", ButtonType.CLOSE).showAndWait();
+                Platform.runLater(() -> new Alert(Alert.AlertType.ERROR, "Network failure", ButtonType.CLOSE).showAndWait());
                 return;
             }
 
             try {
                 messageService.sendSignUpMessage(new User(username, password));
             } catch (InvalidHeaderException e) {
-                new Alert(Alert.AlertType.ERROR, "Internal failure", ButtonType.CLOSE).showAndWait();
+                Platform.runLater(() -> new Alert(Alert.AlertType.ERROR, "Internal failure", ButtonType.CLOSE).showAndWait());
             } catch (IOException e) {
-                new Alert(Alert.AlertType.ERROR, "Network failure", ButtonType.CLOSE).showAndWait();
+                Platform.runLater(() -> new Alert(Alert.AlertType.ERROR, "Network failure", ButtonType.CLOSE).showAndWait());
             }
         }
     }

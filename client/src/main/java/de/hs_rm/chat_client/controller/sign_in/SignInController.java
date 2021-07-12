@@ -9,6 +9,7 @@ import de.hs_rm.chat_client.controller.sign_up.SignUpController;
 import de.hs_rm.chat_client.model.tcp.message.InvalidHeaderException;
 import de.hs_rm.chat_client.model.tcp.user.User;
 import de.hs_rm.chat_client.service.PasswordHasher;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -42,7 +43,7 @@ public class SignInController extends BaseController implements StateObserver {
     @FXML
     private void signIn(ActionEvent event) {
         if (usernameText.getText().isBlank() || passwordText.getText().isBlank()) {
-            new Alert(Alert.AlertType.NONE, "Invalid input", ButtonType.CLOSE).showAndWait();
+            Platform.runLater(() -> new Alert(Alert.AlertType.NONE, "Invalid input", ButtonType.CLOSE).showAndWait());
         } else {
             var username = usernameText.getText().trim();
             var password = PasswordHasher.getHashedPassword(passwordText.getText().trim());
