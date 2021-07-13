@@ -12,6 +12,7 @@ import de.hs_rm.chat_client.service.HeaderMapper;
 
 import java.io.*;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 
 public class ServerMessageService {
 
@@ -26,7 +27,7 @@ public class ServerMessageService {
 
     private ServerMessageService() throws IOException {
         socket = new Socket(REMOTE_HOST, REMOTE_PORT);
-        writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+        writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8));
         clientState = ClientState.getInstance();
         listen();
     }
@@ -92,7 +93,7 @@ public class ServerMessageService {
         new Thread(() -> {
             while (true) {
                 try {
-                    var inFromServer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                    var inFromServer = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
                     var line = inFromServer.readLine();
 
                     if (line != null) {

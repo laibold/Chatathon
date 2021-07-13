@@ -9,6 +9,7 @@ import de.hs_rm.chat_server.service.HeaderMapper;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 
 public class Listener {
     private ServerSocket welcomeSocket;
@@ -33,8 +34,8 @@ public class Listener {
                     BufferedWriter outToClient = null;
 
                     try {
-                        inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
-                        outToClient = new BufferedWriter(new OutputStreamWriter(connectionSocket.getOutputStream()));
+                        inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream(), StandardCharsets.UTF_8));
+                        outToClient = new BufferedWriter(new OutputStreamWriter(connectionSocket.getOutputStream(), StandardCharsets.UTF_8));
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
