@@ -17,7 +17,7 @@ public class MessageSendService {
     public static final int MAXIMUM_SEGMENT_SIZE = Config.MAXIMUM_UDP_SEGMENT_SIZE;
     public static final double ERROR_RATE = Config.UDP_ERROR_RATE;
     public static final int WINDOW_SIZE = 5;
-    public static final int TIMER_MS = 50;
+    public static final int TIMER_MS = 100;
     private static final int SENDING_TIMEOUT_COUNTER = 10;
 
     private final ClientState clientState;
