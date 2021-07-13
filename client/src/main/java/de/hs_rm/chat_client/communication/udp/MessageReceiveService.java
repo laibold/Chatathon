@@ -39,7 +39,6 @@ public class MessageReceiveService {
 
         new Thread(() -> {
             while (receiveMessages) {
-
                 var receivedData = new byte[MAXIMUM_SEGMENT_SIZE + Serializer.getByteSizeOfMessagePacket()];
 
                 var seqWaitingFor = 0;
@@ -47,7 +46,6 @@ public class MessageReceiveService {
                 var receiveMessage = true;
 
                 while (receiveMessage) {
-                    System.out.println("Waiting for packet");
 
                     // Receive packet
                     var receivedPacket = new DatagramPacket(receivedData, receivedData.length);
@@ -57,6 +55,7 @@ public class MessageReceiveService {
                         e.printStackTrace(); // TODO
                     }
 
+                    // Check if packet comes from current chat partner, otherwise listen for next package
                     var packetAddress = receivedPacket.getAddress().getHostAddress();
                     var currentPartnerAddress = clientState.getCurrentChatPartnerAddress().getHostAddress();
                     if (!packetAddress.equals(currentPartnerAddress) &&
@@ -74,19 +73,20 @@ public class MessageReceiveService {
                     }
 
                     assert packet != null;
-                    System.out.println("Packet with sequence number " + packet.getSeq() + " received (last: " + packet.isLast() + " )");
+                    System.out.println("Received packet with sequence number " + packet.getSeq() + " (last: " + packet.isLast() + ")");
 
                     if (packet.getSeq() == seqWaitingFor && packet.isLast()) {
                         seqWaitingFor++;
                         receivedPackets.add(packet);
+                        System.out.println("-> was last packet");
 
                         receiveMessage = false;
                     } else if (packet.getSeq() == seqWaitingFor) {
                         seqWaitingFor++;
                         receivedPackets.add(packet);
-                        System.out.println("Packed stored in buffer");
+                        System.out.println("-> stored in buffer");
                     } else {
-                        System.out.println("Packet discarded (not in order)");
+                        System.out.println("-> discarded (not in order)");
                     }
 
                     // Create an MessageAck
@@ -111,10 +111,10 @@ public class MessageReceiveService {
                         System.out.println("[X] Lost ack with sequence number " + ack.getSeqNumber());
                     }
 
-                    System.out.println("Sending ACK to seq " + seqWaitingFor + " with " + ackBytes.length + " bytes");
+                    System.out.println("Sending ACK for seq " + (seqWaitingFor - 1) + " with " + ackBytes.length + " bytes");
                 }
 
-                System.out.println("RECEIVED DATA:");
+                System.out.println("Receiving complete, message is:");
 
                 var outputStream = new ByteArrayOutputStream();
 
@@ -127,7 +127,7 @@ public class MessageReceiveService {
                 });
 
                 var message = outputStream.toString();
-                System.out.println(message);
+                System.out.println(message + "\n~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~\n");
 
                 receiver.addIncomingChatMessage(clientState.getCurrentChatPartner(), message);
             }

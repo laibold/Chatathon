@@ -53,12 +53,13 @@ public class MessageSendService {
             var lastAckedSeq = 0;
 
             var messageBytes = message.getBytes();
-            System.out.println("Data size: " + messageBytes.length + " bytes");
+            System.out.println("~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~");
+            System.out.println("Start sending message with data size: " + messageBytes.length + " bytes");
 
             // Last packet sequence number
             var numberOfSeqs = (int) Math.ceil((double) messageBytes.length / MAXIMUM_SEGMENT_SIZE);
 
-            System.out.println("Number of packets to send: " + numberOfSeqs);
+            System.out.println("Number of packets to send: " + numberOfSeqs + "\n");
 
             // List of all the packets sent
             var sentPackets = new ArrayList<UdpMessagePacket>();
@@ -104,7 +105,7 @@ public class MessageSendService {
                     }
 
                     assert ackObject != null;
-                    System.out.println("Received ACK for " + ackObject.getSeqNumber());
+                    System.out.println("Received ACK for " + (ackObject.getSeqNumber() - 1));
 
                     // break if last packet was ack'ed
                     if (ackObject.getSeqNumber() == numberOfSeqs) {
@@ -135,9 +136,9 @@ public class MessageSendService {
                     break;
                 }
             }
-        }).start();
 
-        System.out.println("Finished transmission");
+            System.out.println("Finished transmission\n");
+        }).start();
     }
 
     private void sendMessagePacket(UdpMessagePacket messagePacket) {
@@ -152,7 +153,7 @@ public class MessageSendService {
         assert dataToSend != null;
         var packet = new DatagramPacket(dataToSend, dataToSend.length, receiverAddress, receiverPort);
 
-        System.out.println("sending packet with sequence number " + messagePacket.getSeq() + " and size " + dataToSend.length +
+        System.out.println("Sending packet with sequence number " + messagePacket.getSeq() + " and size " + dataToSend.length +
                 " bytes to " + receiverAddress.getHostAddress() + ":" + receiverPort);
 
         if (Math.random() > ERROR_RATE) {

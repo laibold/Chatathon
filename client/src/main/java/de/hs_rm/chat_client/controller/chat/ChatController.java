@@ -75,8 +75,6 @@ public class ChatController extends BaseController implements StateObserver, Cha
             chatLabel.setText(messages);
             chatLabel.setScrollTop(Integer.MAX_VALUE);
         });
-
-        sendButton.setDisable(true);
     }
 
     @FXML
@@ -94,7 +92,6 @@ public class ChatController extends BaseController implements StateObserver, Cha
     private void sendChat(ActionEvent event) {
         var text = chatTextArea.getText().trim();
         if (!text.isBlank()) {
-            System.out.println("ChatController: Send chat message " + text + "\n");
             messageSendService.sendMessage(text);
 
             var str = "You: " + text;
@@ -125,7 +122,6 @@ public class ChatController extends BaseController implements StateObserver, Cha
         if (!message.isBlank()) {
             var str = sender + ": " + message;
             messageList.add(str);
-            System.out.println("ChatController: Received from " + sender + ": " + message);
         }
     }
 
@@ -154,8 +150,6 @@ public class ChatController extends BaseController implements StateObserver, Cha
                 } catch (InvalidHeaderException | IOException e) {
                     e.printStackTrace(); // TODO
                 }
-
-                System.out.println("ChatController: Requested chat with user " + currentItemSelected);
 
                 AtomicReference<Alert> alert = new AtomicReference<>();
 
@@ -229,7 +223,6 @@ public class ChatController extends BaseController implements StateObserver, Cha
                 if (result.get() == ButtonType.YES) {
                     //ok button is pressed
                     sendButton.setDisable(false);
-                    System.out.println("ChatController: accepted chat request");
                     accepted = true;
                     receivePort = messageReceiveService.getReceivePort();
 
@@ -245,7 +238,6 @@ public class ChatController extends BaseController implements StateObserver, Cha
                     messageReceiveService.listenForMessages(this);
                 } else if (result.get() == ButtonType.NO) {
                     // cancel button is pressed
-                    System.out.println("ChatController: declined chat request");
                     accepted = false;
                 }
             }
