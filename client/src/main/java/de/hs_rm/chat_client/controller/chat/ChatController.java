@@ -265,7 +265,7 @@ public class ChatController extends BaseController implements StateObserver, Cha
             var lastMessageIndex = messageList.size() - 1;
             var lastMessage = messageList.get().get(lastMessageIndex);
             messageList.remove(lastMessageIndex);
-            chatTextArea.setText(lastMessage);
+            chatTextArea.setText(lastMessage.replaceFirst("You: ", ""));
         }
 
         Platform.runLater(() -> new Alert(Alert.AlertType.ERROR, message, ButtonType.CLOSE).showAndWait());
