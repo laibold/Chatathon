@@ -10,6 +10,7 @@ import de.hs_rm.chat_server.model.message.MessageType;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 
 public class OutgoingChatRequestMessageHandler {
 
@@ -18,7 +19,7 @@ public class OutgoingChatRequestMessageHandler {
         BufferedWriter outToClient = null;
 
         try {
-            outToClient = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
+            outToClient = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream(), StandardCharsets.UTF_8));
         } catch (IOException e) {
             e.printStackTrace(); // wichtig TODO, sonst könnte unten ein NullPointer fliegen
         }

@@ -12,6 +12,9 @@ import de.hs_rm.chat_server.service.ClientService;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 
 public class OutgoingChatRequestResponseMessageHandler extends MessageHandler {
     @Override
@@ -26,7 +29,17 @@ public class OutgoingChatRequestResponseMessageHandler extends MessageHandler {
             finalChatRequestResponse.setAccepted(false);
         } else {
             finalChatRequestResponse.setAccepted(true);
-            finalChatRequestResponse.setIpAddress(message.getClient().getIp());
+
+            // in case client runs on server machine, use network ip instead of localhost
+            var clientIpAddress = message.getClient().getIp();
+            if (clientIpAddress.equals("127.0.0.1")) {
+                try {
+                    clientIpAddress = InetAddress.getLocalHost().getHostAddress();
+                } catch (UnknownHostException ignore) {
+                }
+            }
+
+            finalChatRequestResponse.setIpAddress(clientIpAddress);
             finalChatRequestResponse.setUdpPort(response.getReceiveUdpPort());
             finalChatRequestResponse.setUsernameOfPartner(response.getRespondingUsername());
         }
@@ -36,7 +49,7 @@ public class OutgoingChatRequestResponseMessageHandler extends MessageHandler {
         BufferedWriter outToClient = null;
 
         try {
-            outToClient = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
+            outToClient = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream(), StandardCharsets.UTF_8));
         } catch (IOException e) {
             e.printStackTrace();  // wichtig TODO, sonst könnte unten ein NullPointer fliegen
         }
