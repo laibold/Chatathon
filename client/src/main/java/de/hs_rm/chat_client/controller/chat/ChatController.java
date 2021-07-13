@@ -16,10 +16,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -44,6 +41,10 @@ public class ChatController extends BaseController implements StateObserver, Cha
     @FXML
     @SuppressWarnings("unused")
     private TextArea chatLabel;
+
+    @FXML
+    @SuppressWarnings("unused")
+    private Button sendButton;
 
     private ServerMessageService serverMessageService;
     private MessageSendService messageSendService;
@@ -74,6 +75,8 @@ public class ChatController extends BaseController implements StateObserver, Cha
             chatLabel.setText(messages);
             chatLabel.setScrollTop(Integer.MAX_VALUE);
         });
+
+        sendButton.setDisable(true);
     }
 
     @FXML
@@ -189,6 +192,7 @@ public class ChatController extends BaseController implements StateObserver, Cha
                             break;
                         case ACCEPTED:
                             Platform.runLater(() -> {
+                                sendButton.setDisable(false);
                                 alert.get().setContentText("User accepted your request. Happy chatting!");
                                 finalChatRequestState.set(ChatRequestState.UNINITIALIZED.ordinal());
                                 alert.get().getButtonTypes().add(ButtonType.CLOSE);
@@ -224,6 +228,7 @@ public class ChatController extends BaseController implements StateObserver, Cha
             if (result.isPresent()) {
                 if (result.get() == ButtonType.YES) {
                     //ok button is pressed
+                    sendButton.setDisable(false);
                     System.out.println("ChatController: accepted chat request");
                     accepted = true;
                     receivePort = messageReceiveService.getReceivePort();

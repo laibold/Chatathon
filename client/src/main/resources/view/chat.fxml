@@ -23,7 +23,7 @@
     <Button alignment="CENTER" mnemonicParsing="false" prefHeight="Infinity" prefWidth="Infinity" text="logout"
             GridPane.columnIndex="2" onAction="#signOut"/>
     <Button alignment="CENTER" mnemonicParsing="false" prefHeight="Infinity" prefWidth="Infinity" text="send"
-            GridPane.columnIndex="2" GridPane.rowIndex="2" onAction="#sendChat"/>
+            GridPane.columnIndex="2" GridPane.rowIndex="2" onAction="#sendChat" fx:id="sendButton"/>
     <TextArea prefHeight="Infinity" prefWidth="Infinity" style="-fx-background-color: white;" GridPane.columnIndex="1"
               GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" fx:id="chatLabel" editable="false"
               wrapText="true"/>
