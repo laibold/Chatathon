@@ -52,7 +52,7 @@ public class MessageReceiveService {
                     try {
                         receiveSocket.receive(receivedPacket);
                     } catch (IOException e) {
-                        e.printStackTrace(); // TODO
+                        e.printStackTrace();
                     }
 
                     // Check if packet comes from current chat partner, otherwise listen for next package
@@ -69,7 +69,7 @@ public class MessageReceiveService {
                     try {
                         packet = (UdpMessagePacket) Serializer.toObject(receivedPacket.getData());
                     } catch (IOException | ClassNotFoundException e) {
-                        e.printStackTrace(); // TODO
+                        e.printStackTrace();
                     }
 
                     assert packet != null;
@@ -105,7 +105,7 @@ public class MessageReceiveService {
                         try {
                             receiveSocket.send(ackPacket);
                         } catch (IOException e) {
-                            e.printStackTrace(); // TODO
+                            e.printStackTrace();
                         }
                     } else {
                         System.out.println("[X] Lost ack with sequence number " + ack.getSeqNumber());

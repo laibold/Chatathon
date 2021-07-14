@@ -64,7 +64,7 @@ public class Listener {
                 // first line marks the header
                 line = inFromClient.readLine();
                 if (line != null) {
-                    // parse header to object
+                    // parse header json to object
                     Header header = null;
                     try {
                         header = HeaderMapper.toHeader(line);

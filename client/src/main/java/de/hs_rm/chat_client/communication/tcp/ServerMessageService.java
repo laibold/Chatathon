@@ -21,13 +21,15 @@ public class ServerMessageService {
 
     private static ServerMessageService instance;
 
-    private final Socket socket;
     private final BufferedWriter writer;
+    private final BufferedReader reader;
+
     private final ClientState clientState;
 
     private ServerMessageService() throws IOException {
-        socket = new Socket(REMOTE_HOST, REMOTE_PORT);
+        Socket socket = new Socket(REMOTE_HOST, REMOTE_PORT);
         writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8));
+        reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
         clientState = ClientState.getInstance();
         listen();
     }
@@ -88,17 +90,16 @@ public class ServerMessageService {
         writer.flush();
     }
 
-    // TODO hier bisschen auslagern und direkt in Threads auslagern
     private void listen() {
         new Thread(() -> {
             while (true) {
                 try {
-                    var inFromServer = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
-                    var line = inFromServer.readLine();
+                    // first line marks the header
+                    var line = reader.readLine();
 
                     if (line != null) {
+                        // parse header json to object
                         Header header = null;
-
                         try {
                             header = HeaderMapper.toHeader(line);
                         } catch (InvalidHeaderException e) {
@@ -106,10 +107,12 @@ public class ServerMessageService {
                         }
 
                         assert header != null;
+                        // create char array with size of body
                         var chars = new char[header.getContentLength()];
 
+                        // read chars from body to String
                         String body;
-                        var charsRead = inFromServer.read(chars, 0, header.getContentLength());
+                        var charsRead = reader.read(chars, 0, header.getContentLength());
                         if (charsRead != -1) {
                             body = new String(chars, 0, charsRead);
                         } else {
@@ -120,45 +123,33 @@ public class ServerMessageService {
                         System.out.println(header);
                         System.out.println(body + "\n");
 
-                        if (header.getStatus() == Header.Status.SUCCESS) {
-                            switch (header.getMessageType()) {
-                                case SIGN_UP_RESPONSE:
-                                    clientState.setCurrentState(ClientState.State.SIGNED_UP);
-                                    break;
-                                case SIGN_IN_RESPONSE:
-                                    clientState.setCurrentState(ClientState.State.SIGNED_IN);
-                                    break;
-                                case LIST_ACTIVE_USERS_RESPONSE:
-                                    if (clientState.getCurrentState() == ClientState.State.SIGNED_IN) {
-                                        clientState.setActiveUsers(body);
-                                    }
-                                    break;
-                                case INCOMING_CHAT_REQUEST_RESPONSE:
-                                case FINAL_CHAT_REQUEST_RESPONSE:
-                                    clientState.setFinalChatRequestResponseState(header.getStatus(), header.getMessageType(), body);
-                                    break;
-                                case OUTGOING_CHAT_REQUEST:
-                                    clientState.openChatRequest(body);
-                                    break;
-                                default:
-                                    break;
-                            }
-                        } else {
-                            // TODO error handling und dann evl beide switches zusammenfassen
-                            switch (header.getMessageType()) {
-                                case INCOMING_CHAT_REQUEST_RESPONSE:
-                                    clientState.setFinalChatRequestResponseState(header.getStatus(), header.getMessageType(), body);
-                                    break;
-                                default:
-                                    break;
-                            }
+                        switch (header.getMessageType()) {
+                            case SIGN_UP_RESPONSE:
+                                clientState.setCurrentState(ClientState.State.SIGNED_UP);
+                                break;
+                            case SIGN_IN_RESPONSE:
+                                clientState.setCurrentState(ClientState.State.SIGNED_IN);
+                                break;
+                            case LIST_ACTIVE_USERS_RESPONSE:
+                                clientState.setActiveUsers(body);
+                                break;
+                            case INCOMING_CHAT_REQUEST_RESPONSE:
+                            case FINAL_CHAT_REQUEST_RESPONSE:
+                                clientState.setFinalChatRequestResponseState(header.getStatus(), header.getMessageType(), body);
+                                break;
+                            case OUTGOING_CHAT_REQUEST:
+                                clientState.openChatRequest(body);
+                                break;
+                            default:
+                                break;
                         }
                     }
-
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
+
         }).start();
     }
+
 }

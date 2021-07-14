@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-// TODO das ganze fromJson sollte eigentlich hier nicht behandelt werden, eher eine Schicht darüber und hier nur durchreichen
 public class ClientState {
 
     private static ClientState instance;
@@ -144,7 +143,7 @@ public class ClientState {
                 try {
                     setCurrentChatPartnerAddress(InetAddress.getByName(bodyValue.getIpAddress()));
                 } catch (UnknownHostException e) {
-                    e.printStackTrace(); // TODO
+                    e.printStackTrace();
                 }
                 setCurrentChatPartnerPort(bodyValue.getUdpPort());
 

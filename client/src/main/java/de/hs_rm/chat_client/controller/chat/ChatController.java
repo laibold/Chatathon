@@ -64,7 +64,7 @@ public class ChatController extends BaseController implements StateObserver, Cha
         try {
             messageReceiveService = new MessageReceiveService();
         } catch (SocketException e) {
-            e.printStackTrace(); // TODO
+            e.printStackTrace();
         }
 
         clientState = ClientState.getInstance();
@@ -148,7 +148,7 @@ public class ChatController extends BaseController implements StateObserver, Cha
                 try {
                     serverMessageService.sendChatRequest(currentItemSelected, messageReceiveService.getReceivePort());
                 } catch (InvalidHeaderException | IOException e) {
-                    e.printStackTrace(); // TODO
+                    e.printStackTrace();
                 }
 
                 AtomicReference<Alert> alert = new AtomicReference<>();
@@ -231,7 +231,7 @@ public class ChatController extends BaseController implements StateObserver, Cha
                     try {
                         clientState.setCurrentChatPartnerAddress(InetAddress.getByName(senderIpAddress));
                     } catch (UnknownHostException e) {
-                        e.printStackTrace(); // TODO
+                        e.printStackTrace();
                     }
                     clientState.setCurrentChatPartnerPort(senderUdpPort);
 
@@ -245,7 +245,7 @@ public class ChatController extends BaseController implements StateObserver, Cha
             try {
                 serverMessageService.sendChatRequestResponse(clientState.getCurrentUsername(), senderUsername, accepted, receivePort);
             } catch (InvalidHeaderException | IOException e) {
-                e.printStackTrace(); // TODO
+                e.printStackTrace();
             }
         });
     }
