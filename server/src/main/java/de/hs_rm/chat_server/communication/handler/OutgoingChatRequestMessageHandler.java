@@ -21,7 +21,7 @@ public class OutgoingChatRequestMessageHandler {
         try {
             outToClient = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream(), StandardCharsets.UTF_8));
         } catch (IOException e) {
-            e.printStackTrace(); // wichtig TODO, sonst könnte unten ein NullPointer fliegen
+            e.printStackTrace();
         }
 
         String outgoingRequest = null;
@@ -33,7 +33,7 @@ public class OutgoingChatRequestMessageHandler {
             e.printStackTrace();
         }
 
-        System.out.println("OUTGOING (" + clientSocket.getRemoteSocketAddress().toString() + "):\t" + outgoingRequest);
+        System.out.printf("Send to client %s\n%s%n\n", clientSocket.getRemoteSocketAddress().toString(), outgoingRequest);
         try {
             outToClient.write(outgoingRequest + "\n");
             outToClient.flush();

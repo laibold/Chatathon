@@ -32,12 +32,12 @@ public class OutgoingChatRequestResponseMessageHandler extends MessageHandler {
 
             // in case client runs on server machine, use network ip instead of localhost
             var clientIpAddress = message.getClient().getIp();
-            if (clientIpAddress.equals("127.0.0.1")) {
-                try {
-                    clientIpAddress = InetAddress.getLocalHost().getHostAddress();
-                } catch (UnknownHostException ignore) {
-                }
-            }
+//            if (clientIpAddress.equals("127.0.0.1")) {
+//                try {
+//                    clientIpAddress = InetAddress.getLocalHost().getHostAddress();
+//                } catch (UnknownHostException ignore) {
+//                }
+//            }
 
             finalChatRequestResponse.setIpAddress(clientIpAddress);
             finalChatRequestResponse.setUdpPort(response.getReceiveUdpPort());
@@ -51,7 +51,7 @@ public class OutgoingChatRequestResponseMessageHandler extends MessageHandler {
         try {
             outToClient = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream(), StandardCharsets.UTF_8));
         } catch (IOException e) {
-            e.printStackTrace();  // wichtig TODO, sonst könnte unten ein NullPointer fliegen
+            e.printStackTrace();
         }
 
         String outgoingRequest = null;
@@ -62,7 +62,7 @@ public class OutgoingChatRequestResponseMessageHandler extends MessageHandler {
             e.printStackTrace();
         }
 
-        System.out.println("OUTGOING (" + clientSocket.getRemoteSocketAddress().toString() + "):\t" + outgoingRequest);
+        System.out.printf("Send to client %s\n%s%n\n", clientSocket.getRemoteSocketAddress().toString(), outgoingRequest);
         try {
             outToClient.write(outgoingRequest + "\n");
             outToClient.flush();

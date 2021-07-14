@@ -14,6 +14,7 @@ public class IncomingChatRequestMessageHandler extends MessageHandler {
 
     private final UserService userService = UserService.getInstance();
     private final ClientService clientService = ClientService.getInstance();
+    private final OutgoingChatRequestMessageHandler outgoingChatRequestMessageHandler = new OutgoingChatRequestMessageHandler();
 
     @Override
     public String handle(Message message) {
@@ -43,7 +44,7 @@ public class IncomingChatRequestMessageHandler extends MessageHandler {
 
         try {
             if (status == Header.Status.SUCCESS) {
-                new OutgoingChatRequestMessageHandler().sendOutgoingChatRequestMessage(
+                outgoingChatRequestMessageHandler.sendOutgoingChatRequestMessage(
                     recipient,
                     request.getSender(),
                     senderIpAddress,

@@ -25,5 +25,4 @@ public class MessageTypeHandler {
         return handler.handle(message);
     }
 
-
 }

@@ -13,22 +13,29 @@ import java.nio.charset.StandardCharsets;
 
 public class Listener {
     private ServerSocket welcomeSocket;
+    private MessageTypeHandler messageTypeHandler;
+
 
     public Listener(int port) {
         try {
+            // socket for handshake with every client
             this.welcomeSocket = new ServerSocket(port);
-            System.out.println("Warte auf Client...");
+            this.messageTypeHandler = new MessageTypeHandler();
+            System.out.println("Waiting for client...");
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public void listen() {
+        // listening loop
         while (true) {
             try {
+                // create communication socket for each connected client
                 final var connectionSocket = this.welcomeSocket.accept();
-                System.out.println("Client hat sich verbunden: " + connectionSocket.getInetAddress() + "\n");
+                System.out.println("Client connected: " + connectionSocket.getInetAddress().getHostAddress() + "\n");
 
+                // start thread for reading from and writing to client
                 new Thread(() -> {
                     BufferedReader inFromClient = null;
                     BufferedWriter outToClient = null;
@@ -51,15 +58,13 @@ public class Listener {
     private void handleRequests(final Socket connectionSocket, final BufferedReader inFromClient, final BufferedWriter outToClient) {
         var connected = true;
 
-        while (connected) {
+        while (connected && connectionSocket.isConnected()) {
             final String line;
             try {
+                // first line marks the header
                 line = inFromClient.readLine();
                 if (line != null) {
-                    //
-                    // PARSE HEADER AND BODY
-                    //
-
+                    // parse header to object
                     Header header = null;
                     try {
                         header = HeaderMapper.toHeader(line);
@@ -68,8 +73,10 @@ public class Listener {
                     }
 
                     assert header != null;
+                    // create char array with size of body
                     var chars = new char[header.getContentLength()];
 
+                    // read chars from body to String
                     String body;
                     var charsRead = inFromClient.read(chars, 0, header.getContentLength());
                     if (charsRead != -1) {
@@ -78,28 +85,22 @@ public class Listener {
                         body = null;
                     }
 
-                    var clientStr = connectionSocket.getRemoteSocketAddress() + ":" + connectionSocket.getLocalPort();
-                    System.out.printf("Vom Client %s empfangen:\n%s \n%s \n\n", clientStr, header, body);
-
-                    //
-                    // RESPONSE
-                    //
-
-                    // Brauchen wir "outToClient.flush();"?
-
-                    var messageTypeHandler = new MessageTypeHandler();
+                    var clientStr = connectionSocket.getRemoteSocketAddress();
+                    System.out.printf("Received from client %s\n%s \n%s \n\n", clientStr, header, body);
 
                     var client = new Client(connectionSocket);
                     var message = new Message(header, body, client);
 
+                    // create response string (contains header and body) from responsible handler
                     var response = messageTypeHandler.handleMessage(message);
 
                     if (response != null) {
-                        System.out.printf("Sende an Client (%s):\n%s%n\n", connectionSocket.getRemoteSocketAddress(), response);
+                        System.out.printf("Send to client %s\n%s%n\n", connectionSocket.getRemoteSocketAddress(), response);
                         outToClient.write(response + "\n");
                         outToClient.flush();
                     }
                 } else {
+                    System.out.printf("Client disconnected: %s", connectionSocket.getRemoteSocketAddress());
                     connected = false;
                 }
             } catch (IOException e) {
