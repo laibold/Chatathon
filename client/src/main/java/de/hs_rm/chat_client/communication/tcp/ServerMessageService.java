@@ -21,15 +21,14 @@ public class ServerMessageService {
 
     private static ServerMessageService instance;
 
+    private final Socket socket;
     private final BufferedWriter writer;
-    private final BufferedReader reader;
 
     private final ClientState clientState;
 
     private ServerMessageService() throws IOException {
-        Socket socket = new Socket(REMOTE_HOST, REMOTE_PORT);
+        socket = new Socket(REMOTE_HOST, REMOTE_PORT);
         writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8));
-        reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
         clientState = ClientState.getInstance();
         listen();
     }
@@ -94,6 +93,7 @@ public class ServerMessageService {
         new Thread(() -> {
             while (true) {
                 try {
+                    var reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
                     // first line marks the header
                     var line = reader.readLine();
 
